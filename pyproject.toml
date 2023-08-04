@@ -1,0 +1,82 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "reprozip"
+dynamic = ["version"]
+description = "A replacement from Python's zipfile.ZipFile for creating reproducible/deterministic ZIP archives."
+readme = "README.md"
+requires-python = ">=3.7"
+license = "MIT"
+keywords = []
+authors = [{ name = "Jay Qi", email = "jayqi@users.noreply.github.com" }]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = []
+
+[project.optional-dependencies]
+tests = ["pytest>=6"]
+
+[project.urls]
+Documentation = "https://github.com/drivendataorg/reprozip#readme"
+Issues = "https://github.com/drivendataorg/reprozip/issues"
+Source = "https://github.com/drivendataorg/reprozip"
+
+[tool.hatch.version]
+path = "reprozip.py"
+
+## DEFAULT ENVIRONMENT ##
+
+[tool.hatch.envs.default]
+dependencies = ["black>=23.1.0", "mypy>=1.0.0", "ruff>=0.0.243"]
+python = "3.10"
+path = ".venv"
+
+[tool.hatch.envs.default.scripts]
+lint = ["black --check {args:.}", "ruff check {args:.}"]
+typecheck = ["mypy {args:reprozip.py} --install-types --non-interactive"]
+
+## TESTS ENVIRONMENT ##
+
+[tool.hatch.envs.tests]
+features = ["tests"]
+dependencies = ["coverage>=6.5", "pytest-cov"]
+template = "tests"
+
+[[tool.hatch.envs.tests.matrix]]
+python = ["3.7", "3.8", "3.9", "3.10", "3.11"]
+
+[tool.hatch.envs.tests.scripts]
+test = "pytest {args:tests.py} --cov=reprozip --cov-report=term --cov-report=html --cov-report=xml"
+
+## TOOLS ##
+
+[tool.black]
+line-length = 99
+
+[tool.ruff]
+line-length = 99
+select = [
+  "E", # Pyflakes
+  "F", # Pycodestyle
+  "I", # isort
+]
+src = ["reprozip.py", "tests.py"]
+unfixable = ["F"]
+
+[tool.ruff.isort]
+known-first-party = ["reprozip"]
+force-sort-within-sections = true
+
+[tool.coverage.run]
+source = ["reprozip.py"]
