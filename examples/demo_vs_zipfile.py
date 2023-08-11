@@ -1,3 +1,7 @@
+"""A demo script that shows repro_zipfile's reproducible output in contrast with the standard
+library module zipfile's nonreproducible output.
+"""
+
 import hashlib
 from pathlib import Path
 from tempfile import TemporaryDirectory
