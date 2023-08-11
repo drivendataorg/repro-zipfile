@@ -125,6 +125,26 @@ def test_write_same_file_different_mtime(base_path):
     assert hash_file(base_path / "zip1.zip") == hash_file(base_path / "zip2.zip")
 
 
+def test_write_same_file_different_mtime_source_date_epoch(base_path, monkeypatch):
+    """Test that writing the same file at different times with SOURCE_DATE_EPOCH set produces the
+    same hash."""
+    monkeypatch.setenv("SOURCE_DATE_EPOCH", "1691732367")
+    data = data_factory()
+    data_file = base_path / "data.txt"
+
+    data_file.write_text(data)
+    with ReproducibleZipFile(base_path / "zip1.zip", "w") as zp:
+        zp.write(data_file)
+
+    sleep(2)
+
+    data_file.write_text(data)
+    with ReproducibleZipFile(base_path / "zip2.zip", "w") as zp:
+        zp.write(data_file)
+
+    assert hash_file(base_path / "zip1.zip") == hash_file(base_path / "zip2.zip")
+
+
 def test_write_same_file_different_mtime_string_input(rel_path):
     """Test that writing the same file with different mtime produces the same hash, using string
     inputs instead of Path."""
@@ -170,8 +190,11 @@ def test_write_same_directory_different_mtime(base_path):
     for data in data_list:
         (data_dir / f"{data}.txt").write_text(data)
     with ReproducibleZipFile(base_path / "zip1.zip", "w") as zp:
-        zp.write(data_dir)
-        print(zp.infolist())
+        for root, dirs, files in os.walk(data_dir):
+            for d in dirs:
+                zp.write(Path(root) / d)
+            for f in files:
+                zp.write(Path(root) / f)
 
     sleep(2)
 
@@ -180,14 +203,34 @@ def test_write_same_directory_different_mtime(base_path):
     for data in data_list:
         (data_dir / f"{data}.txt").write_text(data)
     with ReproducibleZipFile(base_path / "zip2.zip", "w") as zp:
-        zp.write(data_dir)
-        print(zp.infolist())
+        for root, dirs, files in os.walk(data_dir):
+            for d in dirs:
+                zp.write(Path(root) / d)
+            for f in files:
+                zp.write(Path(root) / f)
 
     assert hash_file(base_path / "zip1.zip") == hash_file(base_path / "zip2.zip")
 
 
 def test_writestr_same_data_different_mtime(base_path):
     """Test that using writestr with the same data at different times produces the same hash."""
+    data = data_factory()
+
+    with ReproducibleZipFile(base_path / "zip1.zip", "w") as zp:
+        zp.writestr("data.txt", data=data)
+
+    sleep(2)
+
+    with ReproducibleZipFile(base_path / "zip2.zip", "w") as zp:
+        zp.writestr("data.txt", data=data)
+
+    assert hash_file(base_path / "zip1.zip") == hash_file(base_path / "zip2.zip")
+
+
+def test_writestr_same_data_different_mtime_source_date_epoch(base_path, monkeypatch):
+    """Test that using writestr with the same data at different times with SOURCE_DATE_EPOCH set
+    produces the same hash."""
+    monkeypatch.setenv("SOURCE_DATE_EPOCH", "1691732367")
     data = data_factory()
 
     with ReproducibleZipFile(base_path / "zip1.zip", "w") as zp:

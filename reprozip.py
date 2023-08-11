@@ -1,6 +1,8 @@
 from copy import copy
+import os
 import shutil
 import sys
+import time
 from zipfile import ZIP_LZMA, ZipFile, ZipInfo
 
 try:
@@ -9,6 +11,13 @@ except ImportError:
     _MASK_COMPRESS_OPTION_1 = 0x02
 
 __version__ = "0.1"
+
+
+def date_time():
+    source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH", None)
+    if source_date_epoch is not None:
+        return time.localtime(int(source_date_epoch))
+    return (1980, 1, 1, 0, 0, 0)
 
 
 class ReproducibleZipFile(ZipFile):
@@ -21,8 +30,10 @@ class ReproducibleZipFile(ZipFile):
     https://docs.python.org/3/library/zipfile.html
     """
 
-    # Modified from Python 3.11
+    # Following method modified from Python 3.11
     # https://github.com/python/cpython/blob/202efe1a3bcd499f3bf17bd953c6d36d47747e78/Lib/zipfile.py#L1763-L1794
+    # Copyright Python Software Foundation, licensed under PSF License Version 2
+    # See LICENSE file for full license agreement and notice of copyright
     def write(self, filename, arcname=None, compress_type=None, compresslevel=None):
         """Put the bytes from filename into the archive under the name arcname."""
 
@@ -32,7 +43,7 @@ class ReproducibleZipFile(ZipFile):
             raise ValueError("Can't write to ZIP archive while an open writing handle exists")
 
         zinfo = ZipInfo.from_file(filename, arcname, strict_timestamps=self._strict_timestamps)
-        zinfo.date_time = (1980, 1, 1, 0, 0, 0)  # ADDED
+        zinfo.date_time = date_time()  # ADDED
 
         if zinfo.is_dir():
             zinfo.compress_size = 0
@@ -52,8 +63,10 @@ class ReproducibleZipFile(ZipFile):
             with open(filename, "rb") as src, self.open(zinfo, "w") as dest:
                 shutil.copyfileobj(src, dest, 1024 * 8)
 
-    # Modified from Python 3.11
+    # Following method modified from Python 3.11
     # https://github.com/python/cpython/blob/202efe1a3bcd499f3bf17bd953c6d36d47747e78/Lib/zipfile.py#L1796-L1835
+    # Copyright Python Software Foundation, licensed under PSF License Version 2
+    # See LICENSE file for full license agreement and notice of copyright
     def writestr(self, zinfo_or_arcname, data, compress_type=None, compresslevel=None):
         """Write a file into the archive.  The contents is 'data', which may be either a 'str' or
         a 'bytes' instance; if it is a 'str', it is encoded as UTF-8 first. 'zinfo_or_arcname' is
@@ -61,7 +74,7 @@ class ReproducibleZipFile(ZipFile):
         if isinstance(data, str):
             data = data.encode("utf-8")
         if not isinstance(zinfo_or_arcname, ZipInfo):
-            zinfo = ZipInfo(filename=zinfo_or_arcname, date_time=(1980, 1, 1, 0, 0, 0))  # CHANGED
+            zinfo = ZipInfo(filename=zinfo_or_arcname, date_time=date_time())  # CHANGED
             zinfo.compress_type = self.compression
             zinfo._compresslevel = self.compresslevel
             if zinfo.filename.endswith("/"):
@@ -71,7 +84,7 @@ class ReproducibleZipFile(ZipFile):
                 zinfo.external_attr = 0o600 << 16  # ?rw-------
         else:
             zinfo = copy(zinfo_or_arcname)  # CHANGED
-            zinfo.date_time = (1980, 1, 1, 0, 0, 0)  # ADDED
+            zinfo.date_time = date_time()  # ADDED
 
         if not self.fp:
             raise ValueError("Attempt to write to ZIP archive that was already closed")
@@ -90,8 +103,10 @@ class ReproducibleZipFile(ZipFile):
                 dest.write(data)
 
     if sys.version_info < (3, 11):
-        # Copied from Python 3.11
+        # Following method copied from Python 3.11
         # https://github.com/python/cpython/blob/202efe1a3bcd499f3bf17bd953c6d36d47747e78/Lib/zipfile.py#L1837-L1870
+        # Copyright Python Software Foundation, licensed under PSF License Version 2
+        # See LICENSE file for full license agreement and notice of copyright
         def mkdir(self, zinfo_or_directory_name, mode=511):
             """Creates a directory inside the zip archive."""
             if isinstance(zinfo_or_directory_name, ZipInfo):
