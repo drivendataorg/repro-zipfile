@@ -7,7 +7,7 @@ name = "reprozip"
 dynamic = ["version"]
 description = "A replacement from Python's zipfile.ZipFile for creating reproducible/deterministic ZIP archives."
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = "MIT"
 keywords = []
 authors = [{ name = "Jay Qi", email = "jayqi@users.noreply.github.com" }]
@@ -25,7 +25,7 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-tests = ["pytest>=6"]
+tests = ["pytest>=6", "pytest-cases"]
 
 [project.urls]
 Documentation = "https://github.com/drivendataorg/reprozip#readme"
@@ -54,10 +54,10 @@ dependencies = ["coverage>=6.5", "pytest-cov"]
 template = "tests"
 
 [[tool.hatch.envs.tests.matrix]]
-python = ["3.7", "3.8", "3.9", "3.10", "3.11"]
+python = ["3.8", "3.9", "3.10", "3.11"]
 
 [tool.hatch.envs.tests.scripts]
-test = "pytest {args:tests.py} --cov=reprozip --cov-report=term --cov-report=html --cov-report=xml"
+test = "pytest {args:tests.py} -v --cov=reprozip --cov-report=term --cov-report=html --cov-report=xml"
 
 ## TOOLS ##
 
