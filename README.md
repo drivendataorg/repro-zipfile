@@ -24,6 +24,10 @@ with ReproducibleZipFile("archive.zip", "w") as zp:
     zp.writestr("lore.txt", data="goodbye")
 ```
 
+### Set timestamp value with SOURCE_DATE_EPOCH
+
+repro_zipfile supports setting the fixed timestamp value using the `SOURCE_DATE_EPOCH` environment variable. This should be an integer corresponding to the [Unix epoch time](https://en.wikipedia.org/wiki/Unix_time) of the timestamp you want to set. `SOURCE_DATE_EPOCH` is a [standard](https://reproducible-builds.org/docs/source-date-epoch/) created by the [Reproducible Builds project](https://reproducible-builds.org/).
+
 ## Why care about reproducible ZIP archives?
 
 ZIP archives are often useful when dealing with a set of multiple files, especially if the files are large and can be compressed. Creating reproducible ZIP archives is often useful for:
