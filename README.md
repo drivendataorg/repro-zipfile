@@ -2,17 +2,15 @@
 
 **A replacement from Python's `zipfile.ZipFile` for creating reproducible/deterministic ZIP archives.**
 
-"Reproducible" or "deterministic" in this context means that the binary content of the ZIP archive is identical if you add files with identical binary content in the same order.
-
-## What does repro-zipfile do differently?
-
-repro-zipfile sets the modified timestamp of all files written to the archive to a fixed value. By default, this value is 1980-01-01 0:00 UTC, which is the earliest timestamp that is supported by the ZIP format.
+**repro-zipfile** is a tiny, zero-dependency package. It provides a `ReproducibleZipFile` class that works exactly like [`zipfile.ZipFile`](https://docs.python.org/3/library/zipfile.html#zipfile-objects) from the Python standard library, except that all files written to the archive have their last-modified timestamps set to a fixed value. "Reproducible" or "deterministic" in this context means that the binary content of the ZIP archive is identical if you add files with identical binary content in the same order.
 
 ## Installation
 
 ...
 
 ## Usage
+
+Simply import `ReproducibleZipFile` and use it in the same way you would use [`zipfile.ZipFile`](https://docs.python.org/3/library/zipfile.html#zipfile-objects) from the Python standard library.
 
 ```python
 from repro_zipfile import ReproducibleZipFile
@@ -24,9 +22,33 @@ with ReproducibleZipFile("archive.zip", "w") as zp:
     zp.writestr("lore.txt", data="goodbye")
 ```
 
+See `examples/usage.py` for an example script that you can run, and `examples/demo_vs_zipfile.py` for a demonstration in contrast with the standard library's zipfile module.
+
 ### Set timestamp value with SOURCE_DATE_EPOCH
 
 repro_zipfile supports setting the fixed timestamp value using the `SOURCE_DATE_EPOCH` environment variable. This should be an integer corresponding to the [Unix epoch time](https://en.wikipedia.org/wiki/Unix_time) of the timestamp you want to set. `SOURCE_DATE_EPOCH` is a [standard](https://reproducible-builds.org/docs/source-date-epoch/) created by the [Reproducible Builds project](https://reproducible-builds.org/).
+
+## How does repro-zipfile work?
+
+`repro_zipfile.ReproducibleZipFile` is a subclass of `zipfile.ZipFile` that overrides the `write` and `writestr` methods. The overridden methods set the modified timestamp of all files written to the archive to a fixed value. By default, this value is 1980-01-01 0:00 UTC, which is the earliest timestamp that is supported by the ZIP format. You can customize this value as documented in the previous section.
+
+You can effectively reproduce what `ReproducibleZipFile` does with something like this:
+
+```python
+from zipfile import ZipFile
+
+with ZipFile("archive.zip", "w") as zp:
+    # Use write to add a file to the archive
+    zp.write("examples/data.txt", arcname="data.txt")
+    zinfo = zp.getinfo("data.txt")
+    zinfo.date_time = (1980, 1, 1, 0, 0, 0)
+    # Or writestr to write data to the archive
+    zp.writestr("lore.txt", data="goodbye")
+    zinfo = zp.getinfo("lore.txt")
+    zinfo.date_time = (1980, 1, 1, 0, 0, 0)
+```
+
+It's not hard to do, but we believe `ReproducibleZipFile` is sufficiently more convenient to justify a small package!
 
 ## Why care about reproducible ZIP archives?
 
