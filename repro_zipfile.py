@@ -3,17 +3,18 @@ import os
 import shutil
 import sys
 import time
+from typing import Tuple, Union
 from zipfile import ZIP_LZMA, ZipFile, ZipInfo
 
 try:
-    from zipfile import _MASK_COMPRESS_OPTION_1
+    from zipfile import _MASK_COMPRESS_OPTION_1  # type: ignore[attr-defined]
 except ImportError:
     _MASK_COMPRESS_OPTION_1 = 0x02
 
 __version__ = "0.1"
 
 
-def date_time():
+def date_time() -> Union[time.struct_time, Tuple[int, int, int, int, int, int]]:
     source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH", None)
     if source_date_epoch is not None:
         return time.localtime(int(source_date_epoch))

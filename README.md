@@ -1,12 +1,12 @@
-# reprozip
+# repro-zipfile
 
 **A replacement from Python's `zipfile.ZipFile` for creating reproducible/deterministic ZIP archives.**
 
 "Reproducible" or "deterministic" in this context means that the binary content of the ZIP archive is identical if you add files with identical binary content in the same order.
 
-## What does reprozip do differently?
+## What does repro-zipfile do differently?
 
-reprozip sets the modified timestamp of all files written to the archive to fixed value. By default, this value is 1980-01-01 0:00 UTC, which is the earliest timestamp that is supported by the ZIP format.
+repro-zipfile sets the modified timestamp of all files written to the archive to fixed value. By default, this value is 1980-01-01 0:00 UTC, which is the earliest timestamp that is supported by the ZIP format.
 
 ## Why care about reproducible ZIP archives?
 
@@ -23,7 +23,7 @@ ZIP archives are often useful when dealing with a set of multiple files, especia
 ## Usage
 
 ```python
-from reprozip import ReproducibleZipFile
+from repro_zipfile import ReproducibleZipFile
 
 ...
 ```

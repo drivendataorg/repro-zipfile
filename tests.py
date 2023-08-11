@@ -8,8 +8,7 @@ from zipfile import ZipFile
 
 import pytest
 from pytest_cases import fixture_union
-
-from reprozip import ReproducibleZipFile
+from repro_zipfile import ReproducibleZipFile
 
 
 def data_factory():
@@ -52,18 +51,18 @@ def test_write(base_path):
         (data_dir / f"{i}.txt").write_text(data_factory())
 
     # Create and extract ReproducibleZipFile
-    reprozip_file = base_path / "reprozip_file.zip"
-    with ReproducibleZipFile(reprozip_file, "w") as zp:
+    repro_zipfile_file = base_path / "repro_zipfile_file.zip"
+    with ReproducibleZipFile(repro_zipfile_file, "w") as zp:
         zp.write(data_file)
         for root, dirs, files in os.walk(data_dir):
             for d in dirs:
                 zp.write(Path(root) / d)
             for f in files:
                 zp.write(Path(root) / f)
-    reprozip_outdir = base_path / "reprozip_out"
-    reprozip_outdir.mkdir()
-    with ReproducibleZipFile(reprozip_file, "r") as zp:
-        zp.extractall(reprozip_outdir)
+    repro_zipfile_outdir = base_path / "repro_zipfile_out"
+    repro_zipfile_outdir.mkdir()
+    with ReproducibleZipFile(repro_zipfile_file, "r") as zp:
+        zp.extractall(repro_zipfile_outdir)
 
     # Create and extract regular ZipFile for comparison
     zip_file = base_path / "zip_file.zip"
@@ -79,14 +78,16 @@ def test_write(base_path):
     with ZipFile(zip_file, "r") as zp:
         zp.extractall(zip_outdir)
 
-    reprozip_extracted = sorted(reprozip_outdir.glob("**/*"))
+    repro_zipfile_extracted = sorted(repro_zipfile_outdir.glob("**/*"))
     zip_extracted = sorted(zip_outdir.glob("**/*"))
-    assert len(reprozip_extracted) == len(zip_extracted)
-    for reprozip_member, zip_member in zip(reprozip_extracted, zip_extracted):
-        assert reprozip_member.relative_to(reprozip_outdir) == zip_member.relative_to(zip_outdir)
-        if reprozip_member.is_file():
+    assert len(repro_zipfile_extracted) == len(zip_extracted)
+    for repro_zipfile_member, zip_member in zip(repro_zipfile_extracted, zip_extracted):
+        assert repro_zipfile_member.relative_to(repro_zipfile_outdir) == zip_member.relative_to(
+            zip_outdir
+        )
+        if repro_zipfile_member.is_file():
             assert zip_member.is_file()
-            assert reprozip_member.read_text() == zip_member.read_text()
+            assert repro_zipfile_member.read_text() == zip_member.read_text()
 
 
 def test_writestr(tmp_path):
@@ -94,13 +95,13 @@ def test_writestr(tmp_path):
     basic functionality."""
     data = data_factory()
 
-    with ReproducibleZipFile(tmp_path / "reprozip.zip", "w") as zp:
+    with ReproducibleZipFile(tmp_path / "repro_zipfile.zip", "w") as zp:
         zp.writestr("data.txt", data=data)
 
     extract_dir = tmp_path / "extract"
     extract_dir.mkdir()
 
-    with ZipFile(tmp_path / "reprozip.zip", "r") as zp:
+    with ZipFile(tmp_path / "repro_zipfile.zip", "r") as zp:
         zp.extractall(extract_dir)
 
     assert sorted(extract_dir.glob("**/*")) == [extract_dir / "data.txt"]

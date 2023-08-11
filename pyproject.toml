@@ -3,24 +3,21 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "reprozip"
+name = "repro-zipfile"
 dynamic = ["version"]
 description = "A replacement from Python's zipfile.ZipFile for creating reproducible/deterministic ZIP archives."
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
 keywords = []
-authors = [{ name = "Jay Qi", email = "jayqi@users.noreply.github.com" }]
+authors = [{ name = "DrivenData", email = "info@drivendata.org" }]
 classifiers = [
-  "Development Status :: 4 - Beta",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = []
 
@@ -28,12 +25,12 @@ dependencies = []
 tests = ["pytest>=6", "pytest-cases"]
 
 [project.urls]
-Documentation = "https://github.com/drivendataorg/reprozip#readme"
-Issues = "https://github.com/drivendataorg/reprozip/issues"
-Source = "https://github.com/drivendataorg/reprozip"
+Documentation = "https://github.com/drivendataorg/repro-zipfile#readme"
+Issues = "https://github.com/drivendataorg/repro-zipfile/issues"
+Source = "https://github.com/drivendataorg/repro-zipfile"
 
 [tool.hatch.version]
-path = "reprozip.py"
+path = "repro_zipfile.py"
 
 ## DEFAULT ENVIRONMENT ##
 
@@ -44,7 +41,7 @@ path = ".venv"
 
 [tool.hatch.envs.default.scripts]
 lint = ["black --check {args:.}", "ruff check {args:.}"]
-typecheck = ["mypy {args:reprozip.py} --install-types --non-interactive"]
+typecheck = ["mypy {args:repro_zipfile.py} --install-types --non-interactive"]
 
 ## TESTS ENVIRONMENT ##
 
@@ -57,7 +54,7 @@ template = "tests"
 python = ["3.8", "3.9", "3.10", "3.11"]
 
 [tool.hatch.envs.tests.scripts]
-test = "pytest {args:tests.py} -v --cov=reprozip --cov-report=term --cov-report=html --cov-report=xml"
+test = "pytest {args:tests.py} -v --cov=repro_zipfile --cov-report=term --cov-report=html --cov-report=xml"
 
 ## TOOLS ##
 
@@ -71,12 +68,12 @@ select = [
   "F", # Pycodestyle
   "I", # isort
 ]
-src = ["reprozip.py", "tests.py"]
+src = ["repro_zipfile.py", "tests.py"]
 unfixable = ["F"]
 
 [tool.ruff.isort]
-known-first-party = ["reprozip"]
+known-first-party = ["repro_zipfile"]
 force-sort-within-sections = true
 
 [tool.coverage.run]
-source = ["reprozip.py"]
+source = ["repro_zipfile.py"]
