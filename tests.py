@@ -144,6 +144,24 @@ def test_write_same_file_different_mtime_string_input(rel_path):
     assert hash_file(rel_path / "zip1.zip") == hash_file(rel_path / "zip2.zip")
 
 
+def test_write_same_file_different_mtime_arcname(base_path):
+    """Test that writing the same file with different mtime produces the same hash."""
+    data = data_factory()
+    data_file = base_path / "data.txt"
+
+    data_file.write_text(data)
+    with ReproducibleZipFile(base_path / "zip1.zip", "w") as zp:
+        zp.write(data_file, arcname="lore.txt")
+
+    sleep(2)
+
+    data_file.write_text(data)
+    with ReproducibleZipFile(base_path / "zip2.zip", "w") as zp:
+        zp.write(data_file, arcname="lore.txt")
+
+    assert hash_file(base_path / "zip1.zip") == hash_file(base_path / "zip2.zip")
+
+
 def test_write_same_directory_different_mtime(base_path):
     data_list = [data_factory() for _ in range(3)]
     data_dir = base_path / "dir"
