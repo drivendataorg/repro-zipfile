@@ -11,7 +11,11 @@
 
 ## Installation
 
-...
+repro-zipfile is available from PyPI. To install, run:
+
+```bash
+pip install repro-zipfile
+```
 
 ## Usage
 
@@ -37,7 +41,7 @@ repro_zipfile supports setting the fixed timestamp value using the `SOURCE_DATE_
 
 ## How does repro-zipfile work?
 
-The primary reason that ZIP archives aren't automatically reproducible is because they include last-modified timestamps of files. This means that files with identical content but with different last-modified times cause the resulting ZIP archive to be different. `repro_zipfile.ReproducibleZipFile` is a subclass of `zipfile.ZipFile` that overrides the `write` and `writestr` methods to set the modified timestamp of all files written to the archive to a fixed value. By default, this value is 1980-01-01 0:00 UTC, which is the earliest timestamp that is supported by the ZIP format. You can customize this value as documented in the previous section.
+The primary reason that ZIP archives aren't automatically reproducible is because they include last-modified timestamps of files. This means that files with identical content but with different last-modified times cause the resulting ZIP archive to be different. `repro_zipfile.ReproducibleZipFile` is a subclass of `zipfile.ZipFile` that overrides the `write` and `writestr` methods to set the modified timestamp of all files written to the archive to a fixed value. By default, this value is 1980-01-01 0:00 UTC, which is the earliest timestamp that is supported by the ZIP format. You can customize this value as documented in the previous section. Note that repro-zipfile does not modify the original files—only the metadata written to the archive.
 
 You can effectively reproduce what `ReproducibleZipFile` does with something like this:
 
@@ -61,16 +65,18 @@ It's not hard to do, but we believe `ReproducibleZipFile` is sufficiently more c
 
 ZIP archives are often useful when dealing with a set of multiple files, especially if the files are large and can be compressed. Creating reproducible ZIP archives is often useful for:
 
-- **Building a software package.** This is a development best practice to make it easier to verify distributed software packages. See [reproducible-builds.org](https://reproducible-builds.org/) for more information.
-- **Working with data.** Verify that your data pipeline produced the same outputs, or avoid reprocessing identical data.
-- **Packaging machine learning model artifacts.** Manage trained models more effectively.
+- **Building a software package.** This is a development best practice to make it easier to verify distributed software packages. See the [Reproducible Builds project](https://reproducible-builds.org/) for more explanation.
+- **Working with data.** Verify that your data pipeline produced the same outputs, and avoid further reprocessing of identical data.
+- **Packaging machine learning model artifacts.** Manage model artifact packages more effectively by knowing when they contain identical models.
 
 ## Related Tools and Alternatives
 
 - https://diffoscope.org/
     - Can do a rich comparison of archive files and show what specifically differs
 - https://github.com/timo-reymann/deterministic-zip
-    - Command-line program that matches zip's interface but strips nondeterministic metadata when adding files
+    - Command-line program written in Go that matches zip's interface but strips nondeterministic metadata when adding files
+- https://github.com/bboe/deterministic_zip
+    - Command-line program written in Python that creates deterministic zip archives
 - https://salsa.debian.org/reproducible-builds/strip-nondeterminism
     - Perl library for removing nondeterministic metadata from file archives
 - https://github.com/Code0x58/python-stripzip
