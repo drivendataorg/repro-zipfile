@@ -59,7 +59,7 @@ jobs:
 
       - name: Run tests
         run: |
-          hatch run tests.py${{ matrix.python-version }}:run
+          hatch run tests.py${{ matrix.python-version }}:test
 
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v3
