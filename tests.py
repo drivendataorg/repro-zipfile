@@ -8,6 +8,7 @@ from zipfile import ZipFile
 
 import pytest
 from pytest_cases import fixture_union
+
 from repro_zipfile import ReproducibleZipFile
 
 
