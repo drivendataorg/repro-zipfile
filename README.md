@@ -27,7 +27,9 @@ with ReproducibleZipFile("archive.zip", "w") as zp:
     zp.writestr("lore.txt", data="goodbye")
 ```
 
-See `examples/usage.py` for an example script that you can run, and `examples/demo_vs_zipfile.py` for a demonstration in contrast with the standard library's zipfile module.
+Note that files must be written to the archive in the same order to reproduce an identical archive. Be aware that functions that like `os.listdir`, `os.glob`, `Path.iterdir`, and `Path.glob` return files in a nondeterministic order—you should call `sorted` on their returned values first.
+
+See [`examples/usage.py`](./examples/usage.py) for an example script that you can run, and [`examples/demo_vs_zipfile.py`](./examples/demo_vs_zipfile.py) for a demonstration in contrast with the standard library's zipfile module.
 
 ### Set timestamp value with SOURCE_DATE_EPOCH
 
@@ -35,7 +37,7 @@ repro_zipfile supports setting the fixed timestamp value using the `SOURCE_DATE_
 
 ## How does repro-zipfile work?
 
-`repro_zipfile.ReproducibleZipFile` is a subclass of `zipfile.ZipFile` that overrides the `write` and `writestr` methods. The overridden methods set the modified timestamp of all files written to the archive to a fixed value. By default, this value is 1980-01-01 0:00 UTC, which is the earliest timestamp that is supported by the ZIP format. You can customize this value as documented in the previous section.
+The primary reason that ZIP archives aren't automatically reproducible is because they include last-modified timestamps of files. This means that files with identical content but with different last-modified times cause the resulting ZIP archive to be different. `repro_zipfile.ReproducibleZipFile` is a subclass of `zipfile.ZipFile` that overrides the `write` and `writestr` methods to set the modified timestamp of all files written to the archive to a fixed value. By default, this value is 1980-01-01 0:00 UTC, which is the earliest timestamp that is supported by the ZIP format. You can customize this value as documented in the previous section.
 
 You can effectively reproduce what `ReproducibleZipFile` does with something like this:
 
