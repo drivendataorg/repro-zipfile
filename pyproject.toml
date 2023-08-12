@@ -5,18 +5,25 @@ build-backend = "hatchling.build"
 [project]
 name = "repro-zipfile"
 dynamic = ["version"]
-description = "A replacement from Python's zipfile.ZipFile for creating reproducible/deterministic ZIP archives."
+description = "A tiny, zero-dependency replacement for Python's zipfile.ZipFile for creating reproducible/deterministic ZIP archives."
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
-keywords = []
+keywords = ["zipfile", "zip", "reproducible", "deterministic"]
 authors = [{ name = "DrivenData", email = "info@drivendata.org" }]
 classifiers = [
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Topic :: System :: Archiving",
+  "Topic :: System :: Archiving :: Compression",
+  "Topic :: System :: Archiving :: Packaging",
 ]
 dependencies = []
 
