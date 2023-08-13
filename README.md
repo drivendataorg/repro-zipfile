@@ -76,8 +76,8 @@ ZIP archives are often useful when dealing with a set of multiple files, especia
 - https://github.com/timo-reymann/deterministic-zip
     - Command-line program written in Go that matches zip's interface but strips nondeterministic metadata when adding files
 - https://github.com/bboe/deterministic_zip
-    - Command-line program written in Python that creates deterministic zip archives
+    - Command-line program written in Python that creates deterministic ZIP archives
 - https://salsa.debian.org/reproducible-builds/strip-nondeterminism
     - Perl library for removing nondeterministic metadata from file archives
 - https://github.com/Code0x58/python-stripzip
-    - Python command-line program that removes file metadata from existing zip archives
+    - Python command-line program that removes file metadata from existing ZIP archives
