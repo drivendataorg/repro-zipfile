@@ -11,7 +11,7 @@ try:
 except ImportError:
     _MASK_COMPRESS_OPTION_1 = 0x02
 
-__version__ = "0.1"
+__version__ = "0.1.0"
 
 
 def date_time() -> Union[time.struct_time, Tuple[int, int, int, int, int, int]]:
