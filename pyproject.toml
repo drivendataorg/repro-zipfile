@@ -29,6 +29,7 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
+cli = ["repro-zipfile-cli"]
 tests = ["pytest>=6", "pytest-cases"]
 
 [project.urls]
@@ -42,6 +43,10 @@ path = "repro_zipfile.py"
 ## DEFAULT ENVIRONMENT ##
 
 [tool.hatch.envs.default]
+pre-install-commands = [
+  "pip install -e cli",
+]
+features = ["cli", "tests"]
 dependencies = ["black>=23.1.0", "mypy>=1.0.0", "ruff>=0.0.243"]
 python = "3.10"
 path = ".venv"
@@ -53,7 +58,10 @@ typecheck = ["mypy {args:repro_zipfile.py} --install-types --non-interactive"]
 ## TESTS ENVIRONMENT ##
 
 [tool.hatch.envs.tests]
-features = ["tests"]
+pre-install-commands = [
+  "pip install -e cli",
+]
+features = ["tests", "cli"]
 dependencies = ["coverage>=6.5", "pytest-cov"]
 template = "tests"
 
@@ -61,7 +69,7 @@ template = "tests"
 python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
 [tool.hatch.envs.tests.scripts]
-test = "pytest {args:tests} -v --cov=. --cov-report=term --cov-report=html --cov-report=xml"
+test = "pytest {args:tests} -v --cov=. --cov=./cli --cov-report=term --cov-report=html --cov-report=xml"
 
 ## TOOLS ##
 
@@ -75,11 +83,11 @@ select = [
   "F", # Pycodestyle
   "I", # isort
 ]
-src = ["*.py", "tests/*.py"]
+src = ["*.py", "cli/*.py", "tests/*.py"]
 unfixable = ["F"]
 
 [tool.ruff.isort]
-known-first-party = ["repro_zipfile"]
+known-first-party = ["repro_zipfile", "repro_zipfile_cli"]
 force-sort-within-sections = true
 
 [tool.coverage.run]

@@ -45,7 +45,32 @@ Note that files must be written to the archive in the same order to reproduce an
 
 See [`examples/usage.py`](./examples/usage.py) for an example script that you can run, and [`examples/demo_vs_zipfile.py`](./examples/demo_vs_zipfile.py) for a demonstration in contrast with the standard library's zipfile module.
 
-For more advanced usage, such as customizing the fixed metadata values, see the following section.
+For more advanced usage, such as customizing the fixed metadata values, see the subsections under ["How does repro-zipfile work?"](#how-does-repro-zipfile-work).
+
+## repzip command-line program
+
+[![PyPI](https://img.shields.io/pypi/v/repro-zipfile-cli.svg)](https://pypi.org/project/repro-zipfile-cli/)
+
+You can optionally install a lightweight command-line program, repzip. This includes an additional dependency on the [typer](https://typer.tiangolo.com/) CLI framework. You can install it using the `cli` extra:
+
+```bash
+pip install repro-zipfile[cli]
+```
+
+This will additionally install the package repro-zipfile-cli which implements the CLI. (You can also directly install repro-zipfile-cli for the same outcome.)
+
+repzip's API is intended to be a subset of the most commonly used functionality from the ubiquitous [zip](https://linux.die.net/man/1/zip) program. Use `repzip --help` to see the documentation. Here are some usage examples:
+
+```bash
+# Archive a single file
+repzip archive.zip examples/data.txt
+# Archive multiple files
+repzip archive.zip examples/data.txt README.md
+# Archive multiple files with a shell glob
+repzip archive.zip examples/*.py
+# Archive a directory recursively
+repzip -r archive.zip examples
+```
 
 ## How does repro-zipfile work?
 
