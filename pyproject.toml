@@ -21,6 +21,7 @@ classifiers = [
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Topic :: System :: Archiving",
   "Topic :: System :: Archiving :: Compression",
   "Topic :: System :: Archiving :: Packaging",
@@ -57,10 +58,10 @@ dependencies = ["coverage>=6.5", "pytest-cov"]
 template = "tests"
 
 [[tool.hatch.envs.tests.matrix]]
-python = ["3.8", "3.9", "3.10", "3.11"]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
 [tool.hatch.envs.tests.scripts]
-test = "pytest {args:tests.py} -v --cov=repro_zipfile --cov-report=term --cov-report=html --cov-report=xml"
+test = "pytest {args:tests} -v --cov=. --cov-report=term --cov-report=html --cov-report=xml"
 
 ## TOOLS ##
 
@@ -74,7 +75,7 @@ select = [
   "F", # Pycodestyle
   "I", # isort
 ]
-src = ["repro_zipfile.py", "tests.py"]
+src = ["*.py", "tests/*.py"]
 unfixable = ["F"]
 
 [tool.ruff.isort]
@@ -82,4 +83,4 @@ known-first-party = ["repro_zipfile"]
 force-sort-within-sections = true
 
 [tool.coverage.run]
-source = ["repro_zipfile.py"]
+omit = ["tests/*"]

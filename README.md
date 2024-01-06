@@ -1,13 +1,17 @@
 # repro-zipfile
 
 [![PyPI](https://img.shields.io/pypi/v/repro-zipfile.svg)](https://pypi.org/project/repro-zipfile/)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/repro-zipfile.svg)](https://anaconda.org/conda-forge/repro-zipfile)
+[![conda-forge feedstock](https://img.shields.io/badge/conda--forge-feedstock-yellowgreen)](https://github.com/conda-forge/repro-zipfile-feedstock)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/repro-zipfile)](https://pypi.org/project/repro-zipfile/)
 [![tests](https://github.com/drivendataorg/repro-zipfile/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/drivendataorg/repro-zipfile/actions/workflows/tests.yml?query=branch%3Amain)
 [![codecov](https://codecov.io/gh/drivendataorg/repro-zipfile/branch/main/graph/badge.svg)](https://codecov.io/gh/drivendataorg/repro-zipfile)
 
 **A tiny, zero-dependency replacement for Python's `zipfile.ZipFile` for creating reproducible/deterministic ZIP archives.**
 
-"Reproducible" or "deterministic" in this context means that the binary content of the ZIP archive is identical if you add files with identical binary content in the same order. This Python package provides a `ReproducibleZipFile` class that works exactly like [`zipfile.ZipFile`](https://docs.python.org/3/library/zipfile.html#zipfile-objects) from the Python standard library, except that all files written to the archive have their last-modified timestamps set to a fixed value.
+"Reproducible" or "deterministic" in this context means that the binary content of the ZIP archive is identical if you add files with identical binary content in the same order. It means you can reliably check equality of the contents of two ZIP archives by simply comparing checksums of the archive using a hash function like MD5 or SHA-256.
+
+This Python package provides a `ReproducibleZipFile` class that works exactly like [`zipfile.ZipFile`](https://docs.python.org/3/library/zipfile.html#zipfile-objects) from the Python standard library, except that all files written to the archive have their last-modified timestamps set to a fixed value.
 
 ## Installation
 
@@ -15,6 +19,12 @@ repro-zipfile is available from PyPI. To install, run:
 
 ```bash
 pip install repro-zipfile
+```
+
+It is also available from conda-forge. To install, run:
+
+```bash
+conda install repro-zipfile -c conda-forge
 ```
 
 ## Usage
@@ -37,7 +47,7 @@ See [`examples/usage.py`](./examples/usage.py) for an example script that you ca
 
 ### Set timestamp value with SOURCE_DATE_EPOCH
 
-repro_zipfile supports setting the fixed timestamp value using the `SOURCE_DATE_EPOCH` environment variable. This should be an integer corresponding to the [Unix epoch time](https://en.wikipedia.org/wiki/Unix_time) of the timestamp you want to set. `SOURCE_DATE_EPOCH` is a [standard](https://reproducible-builds.org/docs/source-date-epoch/) created by the [Reproducible Builds project](https://reproducible-builds.org/).
+repro_zipfile supports the `SOURCE_DATE_EPOCH` environment variable. If set, it will be used as a fixed value for the modified timestamps of files added to an archive. This should be an integer corresponding to the [Unix epoch time](https://en.wikipedia.org/wiki/Unix_time) of the timestamp you want to set. `SOURCE_DATE_EPOCH` is a [standard](https://reproducible-builds.org/docs/source-date-epoch/) created by the [Reproducible Builds project](https://reproducible-builds.org/) for software distributions.
 
 ## How does repro-zipfile work?
 
