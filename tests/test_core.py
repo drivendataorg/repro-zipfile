@@ -330,3 +330,31 @@ def test_writestr_source_date_epoch(tmp_path, monkeypatch):
     # Base archive hash should match neither; two with SOURCE_DATE_EPOCH should match
     assert hash_file(arc_base) != hash_file(arc_sde1)
     assert hash_file(arc_sde1) == hash_file(arc_sde2)
+
+
+def test_mkdir(rel_path):
+    """mkdir is a Python 3.11+ method that we've backported to ReproducibleZipFile for <3.11, so
+    that we can use the 3.11 implementation of write. Other tests don't cover direct use with a
+    string input. Test that this is the same as writing a directory with ZipFile.
+    """
+    arc_repro1 = rel_path / "repro1.zip"
+    with ReproducibleZipFile(arc_repro1, "w") as zp:
+        zp.mkdir("dir")
+
+    sleep(2)
+
+    # Hashes are the same in second copy
+    arc_repro2 = rel_path / "repro2.zip"
+    with ReproducibleZipFile(arc_repro2, "w") as zp:
+        zp.mkdir("dir")
+
+    assert hash_file(arc_repro1) == hash_file(arc_repro2)
+
+    # Produces same contests as regular ZipFile
+    dir_path = rel_path / "dir"
+    dir_path.mkdir()
+    arc_zip = rel_path / "zip.zip"
+    with ZipFile(arc_zip, "w") as zp:
+        zp.write(dir_path)
+
+    assert_archive_contents_equals(arc_repro1, arc_zip)
