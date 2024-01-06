@@ -1,6 +1,8 @@
 # repro-zipfile
 
 [![PyPI](https://img.shields.io/pypi/v/repro-zipfile.svg)](https://pypi.org/project/repro-zipfile/)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/repro-zipfile.svg)](https://anaconda.org/conda-forge/repro-zipfile)
+[![conda-forge feedstock](https://img.shields.io/badge/conda--forge-feedstock-yellowgreen)](https://github.com/conda-forge/repro-zipfile-feedstock)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/repro-zipfile)](https://pypi.org/project/repro-zipfile/)
 [![tests](https://github.com/drivendataorg/repro-zipfile/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/drivendataorg/repro-zipfile/actions/workflows/tests.yml?query=branch%3Amain)
 [![codecov](https://codecov.io/gh/drivendataorg/repro-zipfile/branch/main/graph/badge.svg)](https://codecov.io/gh/drivendataorg/repro-zipfile)
