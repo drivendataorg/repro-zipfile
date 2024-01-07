@@ -153,7 +153,7 @@ class ReproducibleZipFile(ZipFile):
                 dest.write(data)
 
     if sys.version_info < (3, 11):
-        # Following method copied from Python 3.11
+        # Following method modified from Python 3.11
         # https://github.com/python/cpython/blob/202efe1a3bcd499f3bf17bd953c6d36d47747e78/Lib/zipfile.py#L1837-L1870
         # Copyright Python Software Foundation, licensed under PSF License Version 2
         # See LICENSE file for full license agreement and notice of copyright
