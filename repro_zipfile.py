@@ -180,11 +180,8 @@ class ReproducibleZipFile(ZipFile):
             # Overwrite date_time and extrnal_attr (permissions mode)
             zinfo = copy(zinfo)
             zinfo.date_time = date_time()
-            if zinfo.is_dir():
-                zinfo.external_attr = (0o40000 | dir_mode()) << 16
-                zinfo.external_attr |= 0x10  # MS-DOS directory flag
-            else:
-                zinfo.external_attr = file_mode() << 16
+            zinfo.external_attr = (0o40000 | dir_mode()) << 16
+            zinfo.external_attr |= 0x10  # MS-DOS directory flag
             #########################
 
             with self._lock:

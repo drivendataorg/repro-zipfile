@@ -1,4 +1,5 @@
 from time import sleep
+import zipfile
 from zipfile import ZipFile, ZipInfo
 
 from repro_zipfile import ReproducibleZipFile
@@ -181,7 +182,7 @@ def test_write_single_file(base_path):
     assert hash_file(zip1) != hash_file(zip2)
 
 
-def test_write_single_file_with_source_date_epoch(base_path, monkeypatch):
+def test_write_single_file_source_date_epoch(base_path, monkeypatch):
     """Writing the same file with different mtime with SOURCE_DATE_EPOCH set produces the
     same hash."""
 
@@ -212,6 +213,26 @@ def test_write_single_file_with_source_date_epoch(base_path, monkeypatch):
     # Base archive hash should match neither, two archives with SOURCE_DATE_EPOCH should match
     assert hash_file(arc_base) != hash_file(arc_sde1)
     assert hash_file(arc_sde1) == hash_file(arc_sde2)
+
+
+def test_write_single_file_file_mode_env_var(rel_path, monkeypatch):
+    """REPRO_ZIPFILE_FILE_MODE environment variable works."""
+
+    with umask(0o002):
+        # Expect 664
+        data_file = file_factory(rel_path)
+
+    monkeypatch.setenv("REPRO_ZIPFILE_FILE_MODE", "600")  # rw-------
+
+    arc_path = rel_path / "archive.zip"
+    with ReproducibleZipFile(arc_path, "w") as zp:
+        zp.write(data_file)
+
+    with ZipFile(arc_path, "r") as zp:
+        print(zp.infolist())
+        mode = (zp.getinfo(data_file.name).external_attr >> 16) & 0o777
+
+    assert mode == 0o600, (oct(mode), oct(0o600))
 
 
 def test_write_single_file_string_paths(rel_path):
@@ -281,6 +302,27 @@ def test_write_single_file_arcname(base_path):
     # ReproducibleZipFile hashes should match; ZipFile hashes should not
     assert hash_file(repro_zip1) == hash_file(repro_zip2)
     assert hash_file(zip1) != hash_file(zip2)
+
+
+def test_write_single_dir_dir_mode_env_var(rel_path, monkeypatch):
+    """REPRO_ZIPFILE_DIR_MODE environment variable works."""
+
+    with umask(0o002):
+        # Expect 775
+        dir_path = rel_path / data_factory()
+        dir_path.mkdir()
+
+    monkeypatch.setenv("REPRO_ZIPFILE_DIR_MODE", "700")  # rwx------
+
+    arc_path = rel_path / "archive.zip"
+    with ReproducibleZipFile(arc_path, "w") as zp:
+        zp.write(dir_path)
+
+    with ZipFile(arc_path, "r") as zp:
+        print(zp.infolist())
+        mode = (zp.getinfo(dir_path.name + "/").external_attr >> 16) & 0o777
+
+    assert mode == 0o700, (oct(mode), oct(0o700))
 
 
 def test_writestr(tmp_path):
