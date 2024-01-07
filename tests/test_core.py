@@ -1,5 +1,4 @@
 from time import sleep
-import zipfile
 from zipfile import ZipFile, ZipInfo
 
 from repro_zipfile import ReproducibleZipFile
