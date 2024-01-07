@@ -45,13 +45,16 @@ Note that files must be written to the archive in the same order to reproduce an
 
 See [`examples/usage.py`](./examples/usage.py) for an example script that you can run, and [`examples/demo_vs_zipfile.py`](./examples/demo_vs_zipfile.py) for a demonstration in contrast with the standard library's zipfile module.
 
-### Set timestamp value with SOURCE_DATE_EPOCH
-
-repro_zipfile supports the `SOURCE_DATE_EPOCH` environment variable. If set, it will be used as a fixed value for the modified timestamps of files added to an archive. This should be an integer corresponding to the [Unix epoch time](https://en.wikipedia.org/wiki/Unix_time) of the timestamp you want to set. `SOURCE_DATE_EPOCH` is a [standard](https://reproducible-builds.org/docs/source-date-epoch/) created by the [Reproducible Builds project](https://reproducible-builds.org/) for software distributions.
+For more advanced usage, such as customizing the fixed metadata values, see the following section.
 
 ## How does repro-zipfile work?
 
-The primary reason that ZIP archives aren't automatically reproducible is because they include last-modified timestamps of files. This means that files with identical content but with different last-modified times cause the resulting ZIP archive to be different. `repro_zipfile.ReproducibleZipFile` is a subclass of `zipfile.ZipFile` that overrides the `write` and `writestr` methods to set the modified timestamp of all files written to the archive to a fixed value. By default, this value is 1980-01-01 0:00 UTC, which is the earliest timestamp that is supported by the ZIP format. You can customize this value as documented in the previous section. Note that repro-zipfile does not modify the original files—only the metadata written to the archive.
+ZIP archives are not normally reproducible even when containing files with identical content because of file metadata. In particular, the usual culprits are:
+
+1. Last-modified timestamps
+2. File-system permissions (mode)
+
+`repro_zipfile.ReproducibleZipFile` is a subclass of `zipfile.ZipFile` that overrides the `write`, `writestr`, and `mkdir` methods with versions that set the above metadata to fixed values. Note that repro-zipfile does not modify the original files—only the metadata written to the archive.
 
 You can effectively reproduce what `ReproducibleZipFile` does with something like this:
 
@@ -63,13 +66,29 @@ with ZipFile("archive.zip", "w") as zp:
     zp.write("examples/data.txt", arcname="data.txt")
     zinfo = zp.getinfo("data.txt")
     zinfo.date_time = (1980, 1, 1, 0, 0, 0)
+    zinfo.external_attr = 0o644 << 16
     # Or writestr to write data to the archive
     zp.writestr("lore.txt", data="goodbye")
     zinfo = zp.getinfo("lore.txt")
     zinfo.date_time = (1980, 1, 1, 0, 0, 0)
+    zinfo.external_attr = 0o644 << 16
 ```
 
 It's not hard to do, but we believe `ReproducibleZipFile` is sufficiently more convenient to justify a small package!
+
+See the next two sections for more details about the replacement metadata values and how to customize them.
+
+### Last-modified timestamps
+
+ZIP archives store the last-modified timestamps of files and directories. `ReproducibleZipFile` will set this to a fixed value. By default, the fixed value is 1980-01-01 0:00 UTC, which is the earliest timestamp that is supported by the ZIP format specifications.
+
+You can customize this value with the `SOURCE_DATE_EPOCH` environment variable. If set, it will be used as the fixed value instead. This should be an integer corresponding to the [Unix epoch time](https://en.wikipedia.org/wiki/Unix_time) of the timestamp you want to set. `SOURCE_DATE_EPOCH` is a [standard](https://reproducible-builds.org/docs/source-date-epoch/) created by the [Reproducible Builds project](https://reproducible-builds.org/) for software distributions.
+
+### File-system permissions
+
+ZIP archives store the file-system permissions of files and directories. The default permissions set for new files or directories often can be different across different systems or users without any intentional choices being made. (These default permissions are controlled by something called [`umask`](https://en.wikipedia.org/wiki/Umask).) `ReproducibleZipFile` will set these to fixed values. By default, the fixed values are `0o644` (`rw-r--r--`) for files and `0o755` (`rwxr-xr-x`) for directories, which matches the common default `umask` of `0o022` for root users on Unix systems.
+
+You can customize these values using the environment variables `REPRO_ZIPFILE_FILE_MODE` and `REPRO_ZIPFILE_DIR_MODE`. They should be in three-digit octal [Unix numeric notation](https://en.wikipedia.org/wiki/File-system_permissions#Numeric_notation), e.g., `644` for `rw-r--r--`.
 
 ## Why care about reproducible ZIP archives?
 

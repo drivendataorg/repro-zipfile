@@ -28,7 +28,8 @@ def date_time() -> Union[time.struct_time, Tuple[int, int, int, int, int, int]]:
 def file_mode() -> int:
     """Returns the file permissions mode value used to force overwrite on all ZipInfo objects.
     Defaults to 0o644 (rw-r--r--). You can set this with the environment variable
-    REPRO_ZIPFILE_FILE_MODE as a value in octal (e.g., '644').
+    REPRO_ZIPFILE_FILE_MODE. It should be in the Unix standard three-digit octal representation
+    (e.g., '644').
     """
     file_mode_env = os.environ.get("REPRO_ZIPFILE_FILE_MODE", None)
     if file_mode_env is not None:
@@ -39,8 +40,8 @@ def file_mode() -> int:
 def dir_mode() -> int:
     """Returns the directory permissions mode value used to force overwrite on all ZipInfo objects.
     Defaults to 0o755 (rwxr-xr-x). You can set this with the environment variable
-    REPRO_ZIPFILE_DIR_MODE You can set this with the environment variable
-    REPRO_ZIPFILE_FILE_MODE as a value in octal (e.g., '755').
+    REPRO_ZIPFILE_DIR_MODE. It should be in the Unix standard three-digit octal representation
+    (e.g., '755').
     """
     dir_mode_env = os.environ.get("REPRO_ZIPFILE_DIR_MODE", None)
     if dir_mode_env is not None:
