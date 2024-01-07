@@ -75,6 +75,7 @@ class ReproducibleZipFile(ZipFile):
 
         ## repro-zipfile ADDED ##
         # Overwrite date_time and extrnal_attr (permissions mode)
+        zinfo = copy(zinfo)
         zinfo.date_time = date_time()
         if zinfo.is_dir():
             zinfo.external_attr = (0o40000 | dir_mode()) << 16
@@ -125,6 +126,7 @@ class ReproducibleZipFile(ZipFile):
 
         ## repro-zipfile ADDED ##
         # Overwrite date_time and extrnal_attr (permissions mode)
+        zinfo = copy(zinfo)
         zinfo.date_time = date_time()
         if zinfo.is_dir():
             zinfo.external_attr = (0o40000 | dir_mode()) << 16
@@ -175,6 +177,7 @@ class ReproducibleZipFile(ZipFile):
 
             ## repro-zipfile ADDED ##
             # Overwrite date_time and extrnal_attr (permissions mode)
+            zinfo = copy(zinfo)
             zinfo.date_time = date_time()
             if zinfo.is_dir():
                 zinfo.external_attr = (0o40000 | dir_mode()) << 16
