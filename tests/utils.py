@@ -1,4 +1,6 @@
+from contextlib import contextmanager
 import hashlib
+import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
@@ -41,6 +43,14 @@ def dir_tree_factory(parent_dir: Path):
         file_factory(sub_dir)
 
     return root_dir
+
+
+@contextmanager
+def umask(mask: int):
+    """Utility context manager to temporarily set umask to a new value."""
+    old_mask = os.umask(mask)
+    yield mask
+    os.umask(old_mask)
 
 
 def hash_file(path: Path):

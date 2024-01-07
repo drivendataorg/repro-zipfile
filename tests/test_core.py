@@ -8,11 +8,12 @@ from tests.utils import (
     dir_tree_factory,
     file_factory,
     hash_file,
+    umask,
 )
 
 
-def test_write_dir_tree(base_path):
-    """Archiving a directory tree works."""
+def test_write_dir_tree_mtime(base_path):
+    """Archiving a directory tree works with different modified time."""
     dir_tree = dir_tree_factory(base_path)
 
     # Create base ReproducibleZipFile archive
@@ -27,10 +28,58 @@ def test_write_dir_tree(base_path):
         for path in sorted(dir_tree.glob("**/*")):
             zp.write(path)
 
-    # Update modified times
+    # Sleep to update modified times, change permissions
     sleep(2)
     for path in dir_tree.glob("**/*"):
         path.touch()
+
+    # Create second ReproducibleZipFile archive after delay
+    repro_zipfile_arc2 = base_path / "repro_zipfile2.zip"
+    with ReproducibleZipFile(repro_zipfile_arc2, "w") as zp:
+        for path in sorted(dir_tree.glob("**/*")):
+            zp.write(path)
+
+    # Create second regular ZipFile archive for comparison after delay
+    zipfile_arc2 = base_path / "zipfile2.zip"
+    with ZipFile(zipfile_arc2, "w") as zp:
+        for path in sorted(dir_tree.glob("**/*")):
+            zp.write(path)
+
+    # All four archives should have identical content
+    assert_archive_contents_equals(repro_zipfile_arc1, zipfile_arc1)
+    assert_archive_contents_equals(repro_zipfile_arc1, repro_zipfile_arc2)
+    assert_archive_contents_equals(repro_zipfile_arc1, zipfile_arc2)
+
+    # ReproducibleZipFile hashes should match; ZipFile hashes should not
+    assert hash_file(repro_zipfile_arc1) == hash_file(repro_zipfile_arc2)
+    assert hash_file(zipfile_arc1) != hash_file(zipfile_arc2)
+
+
+def test_write_dir_tree_mode(base_path):
+    """Archiving a directory tree works with different permission modes."""
+    with umask(0o022):
+        dir_tree = dir_tree_factory(base_path)
+
+    # Create base ReproducibleZipFile archive
+    repro_zipfile_arc1 = base_path / "repro_zipfile1.zip"
+    with ReproducibleZipFile(repro_zipfile_arc1, "w") as zp:
+        for path in sorted(dir_tree.glob("**/*")):
+            zp.write(path)
+
+    # Create regular ZipFile archive for comparison
+    zipfile_arc1 = base_path / "zipfile1.zip"
+    with ZipFile(zipfile_arc1, "w") as zp:
+        for path in sorted(dir_tree.glob("**/*")):
+            zp.write(path)
+
+    # Change permissions
+    with umask(0o002) as mask:
+        dir_tree.chmod(mode=0o777 ^ mask)
+        for path in dir_tree.glob("**/*"):
+            if path.is_file():
+                path.chmod(mode=0o666 ^ mask)
+            else:
+                path.chmod(mode=0o777 ^ mask)
 
     # Create second ReproducibleZipFile archive after delay
     repro_zipfile_arc2 = base_path / "repro_zipfile2.zip"
