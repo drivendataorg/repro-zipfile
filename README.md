@@ -80,9 +80,9 @@ See the next two sections for more details about the replacement metadata values
 
 ### Last-modified timestamps
 
-ZIP archives store the last-modified timestamps of files and directories. `ReproducibleZipFile` will set this to a fixed value. By default, the fixed value is 1980-01-01 0:00 UTC, which is the earliest timestamp that is supported by the ZIP format specifications.
+ZIP archives store the last-modified timestamps of files and directories. `ReproducibleZipFile` will set this to a fixed value. By default, the fixed value is 1980-01-01 00:00 UTC, which is the earliest timestamp that is supported by the ZIP format specifications.
 
-You can customize this value with the `SOURCE_DATE_EPOCH` environment variable. If set, it will be used as the fixed value instead. This should be an integer corresponding to the [Unix epoch time](https://en.wikipedia.org/wiki/Unix_time) of the timestamp you want to set. `SOURCE_DATE_EPOCH` is a [standard](https://reproducible-builds.org/docs/source-date-epoch/) created by the [Reproducible Builds project](https://reproducible-builds.org/) for software distributions.
+You can customize this value with the `SOURCE_DATE_EPOCH` environment variable. If set, it will be used as the fixed value instead. This should be an integer corresponding to the [Unix epoch time](https://en.wikipedia.org/wiki/Unix_time) of the timestamp you want to set, e.g., `1704067230` for 2024-01-01 00:00:00 UTC. `SOURCE_DATE_EPOCH` is a [standard](https://reproducible-builds.org/docs/source-date-epoch/) created by the [Reproducible Builds project](https://reproducible-builds.org/) for software distributions.
 
 ### File-system permissions
 
