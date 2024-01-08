@@ -1,3 +1,4 @@
+import platform
 from time import sleep
 from zipfile import ZipFile, ZipInfo
 
@@ -100,7 +101,9 @@ def test_write_dir_tree_mode(base_path):
 
     # ReproducibleZipFile hashes should match; ZipFile hashes should not
     assert hash_file(repro_zipfile_arc1) == hash_file(repro_zipfile_arc2)
-    assert hash_file(zipfile_arc1) != hash_file(zipfile_arc2)
+    if platform.system() != "Windows":
+        # Windows doesn't seem to actually make them different
+        assert hash_file(zipfile_arc1) != hash_file(zipfile_arc2)
 
 
 def test_write_dir_tree_string_paths(rel_path):
