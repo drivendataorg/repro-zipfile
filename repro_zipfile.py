@@ -11,23 +11,52 @@ try:
 except ImportError:
     _MASK_COMPRESS_OPTION_1 = 0x02
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 
 def date_time() -> Union[time.struct_time, Tuple[int, int, int, int, int, int]]:
+    """Returns date_time value used to force overwrite on all ZipInfo objects. Defaults to
+    1980-01-01 00:00:00. You can set this with the environment variable SOURCE_DATE_EPOCH as an
+    integer value representing seconds since Epoch.
+    """
     source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH", None)
     if source_date_epoch is not None:
         return time.localtime(int(source_date_epoch))
     return (1980, 1, 1, 0, 0, 0)
 
 
+def file_mode() -> int:
+    """Returns the file permissions mode value used to force overwrite on all ZipInfo objects.
+    Defaults to 0o644 (rw-r--r--). You can set this with the environment variable
+    REPRO_ZIPFILE_FILE_MODE. It should be in the Unix standard three-digit octal representation
+    (e.g., '644').
+    """
+    file_mode_env = os.environ.get("REPRO_ZIPFILE_FILE_MODE", None)
+    if file_mode_env is not None:
+        return int(file_mode_env, 8)
+    return 0o644
+
+
+def dir_mode() -> int:
+    """Returns the directory permissions mode value used to force overwrite on all ZipInfo objects.
+    Defaults to 0o755 (rwxr-xr-x). You can set this with the environment variable
+    REPRO_ZIPFILE_DIR_MODE. It should be in the Unix standard three-digit octal representation
+    (e.g., '755').
+    """
+    dir_mode_env = os.environ.get("REPRO_ZIPFILE_DIR_MODE", None)
+    if dir_mode_env is not None:
+        return int(dir_mode_env, 8)
+    return 0o755
+
+
 class ReproducibleZipFile(ZipFile):
     """Open a ZIP file, where file can be a path to a file (a string), a file-like object or a
     path-like object.
 
-    This is a replacement for the Python standard library zipfile.ZipFile that
-    overwrites file-modified timestamps in write mode in order to create a reproducible ZIP
-    archive. For documentation on use, see the Python documentation for zipfile:
+    This is a replacement for the Python standard library zipfile.ZipFile that overwrites
+    file-modified timestamps and file/directory permissions modes in write mode in order to create
+    a reproducible ZIP archive. Other than overwriting these values, it works the same way as
+    zipfile.ZipFile. For documentation on use, see the Python documentation for zipfile:
     https://docs.python.org/3/library/zipfile.html
     """
 
@@ -44,7 +73,17 @@ class ReproducibleZipFile(ZipFile):
             raise ValueError("Can't write to ZIP archive while an open writing handle exists")
 
         zinfo = ZipInfo.from_file(filename, arcname, strict_timestamps=self._strict_timestamps)
-        zinfo.date_time = date_time()  # ADDED
+
+        ## repro-zipfile ADDED ##
+        # Overwrite date_time and extrnal_attr (permissions mode)
+        zinfo = copy(zinfo)
+        zinfo.date_time = date_time()
+        if zinfo.is_dir():
+            zinfo.external_attr = (0o40000 | dir_mode()) << 16
+            zinfo.external_attr |= 0x10  # MS-DOS directory flag
+        else:
+            zinfo.external_attr = file_mode() << 16
+        #########################
 
         if zinfo.is_dir():
             zinfo.compress_size = 0
@@ -75,7 +114,7 @@ class ReproducibleZipFile(ZipFile):
         if isinstance(data, str):
             data = data.encode("utf-8")
         if not isinstance(zinfo_or_arcname, ZipInfo):
-            zinfo = ZipInfo(filename=zinfo_or_arcname, date_time=date_time())  # CHANGED
+            zinfo = ZipInfo(filename=zinfo_or_arcname, date_time=time.localtime(time.time())[:6])
             zinfo.compress_type = self.compression
             zinfo._compresslevel = self.compresslevel
             if zinfo.filename.endswith("/"):
@@ -84,8 +123,18 @@ class ReproducibleZipFile(ZipFile):
             else:
                 zinfo.external_attr = 0o600 << 16  # ?rw-------
         else:
-            zinfo = copy(zinfo_or_arcname)  # CHANGED
-            zinfo.date_time = date_time()  # ADDED
+            zinfo = zinfo_or_arcname
+
+        ## repro-zipfile ADDED ##
+        # Overwrite date_time and extrnal_attr (permissions mode)
+        zinfo = copy(zinfo)
+        zinfo.date_time = date_time()
+        if zinfo.is_dir():
+            zinfo.external_attr = (0o40000 | dir_mode()) << 16
+            zinfo.external_attr |= 0x10  # MS-DOS directory flag
+        else:
+            zinfo.external_attr = file_mode() << 16
+        #########################
 
         if not self.fp:
             raise ValueError("Attempt to write to ZIP archive that was already closed")
@@ -104,7 +153,7 @@ class ReproducibleZipFile(ZipFile):
                 dest.write(data)
 
     if sys.version_info < (3, 11):
-        # Following method copied from Python 3.11
+        # Following method modified from Python 3.11
         # https://github.com/python/cpython/blob/202efe1a3bcd499f3bf17bd953c6d36d47747e78/Lib/zipfile.py#L1837-L1870
         # Copyright Python Software Foundation, licensed under PSF License Version 2
         # See LICENSE file for full license agreement and notice of copyright
@@ -126,6 +175,14 @@ class ReproducibleZipFile(ZipFile):
                 zinfo.external_attr |= 0x10
             else:
                 raise TypeError("Expected type str or ZipInfo")
+
+            ## repro-zipfile ADDED ##
+            # Overwrite date_time and extrnal_attr (permissions mode)
+            zinfo = copy(zinfo)
+            zinfo.date_time = date_time()
+            zinfo.external_attr = (0o40000 | dir_mode()) << 16
+            zinfo.external_attr |= 0x10  # MS-DOS directory flag
+            #########################
 
             with self._lock:
                 if self._seekable:
