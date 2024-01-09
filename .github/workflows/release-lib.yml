@@ -1,13 +1,13 @@
-name: release
+name: release-lib
 
 on:
-  release:
-    types:
-      - published
+  push:
+    tags:
+      - "v*"
 
 jobs:
   build:
-    name: Build and publish new release
+    name: Publish library
     runs-on: "ubuntu-latest"
 
     steps:
