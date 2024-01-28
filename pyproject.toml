@@ -29,7 +29,7 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-cli = ["repro-zipfile-cli"]
+cli = ["rpzip"]
 tests = ["pytest>=6", "pytest-cases"]
 
 [project.urls]

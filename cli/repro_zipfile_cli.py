@@ -25,12 +25,12 @@ logger.addHandler(logging.NullHandler())
 def version_callback(value: bool):
     if value:
         print(f"repro-zipfile v{repro_zipfile_version}")
-        print(f"repro-zipfile-cli (repzip) v{__version__}")
+        print(f"rpzip (rpzip) v{__version__}")
         raise typer.Exit()
 
 
 @app.command(context_settings={"obj": {}})
-def repzip(
+def rpzip(
     out_file: Annotated[
         str,
         typer.Argument(help="Path of output archive. '.zip' suffix will be added if not present."),
@@ -74,10 +74,10 @@ def repzip(
     Example commands:
 
     \b
-      repzip archive.zip some_file.txt        # Archive one file
-      repzip archive.zip file1.txt file2.txt  # Archive two files
-      repzip archive.zip some_dir/*.txt       # Archive with glob
-      repzip -r archive.zip some_dir/         # Archive directory recursively
+      rpzip archive.zip some_file.txt        # Archive one file
+      rpzip archive.zip file1.txt file2.txt  # Archive two files
+      rpzip archive.zip some_dir/*.txt       # Archive with glob
+      rpzip -r archive.zip some_dir/         # Archive directory recursively
     """
     # Set up logger
     log_level = logging.INFO + 10 * quiet - 10 * verbose

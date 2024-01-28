@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Publish library
+    name: Publish library release
     runs-on: "ubuntu-latest"
 
     steps:
