@@ -25,10 +25,10 @@ jobs:
       - name: Check that versions match
         id: version
         run: |
-          echo "Release tag: [${{ github.event.release.tag_name }}]"
+          echo "Release tag: [${{ github.ref_name }}]"
           PACKAGE_VERSION=$(hatch run python -c "import repro_zipfile; print(repro_zipfile.__version__)")
           echo "Package version: [$PACKAGE_VERSION]"
-          [ ${{ github.event.release.tag_name }} == "v$PACKAGE_VERSION" ] || { exit 1; }
+          [ ${{ github.ref_name }} == "v$PACKAGE_VERSION" ] || { exit 1; }
           echo "::set-output name=major_minor_version::v${PACKAGE_VERSION%.*}"
 
       - name: Build package
