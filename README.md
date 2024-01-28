@@ -11,9 +11,9 @@
 
 "Reproducible" or "deterministic" in this context means that the binary content of the ZIP archive is identical if you add files with identical binary content in the same order. It means you can reliably check equality of the contents of two ZIP archives by simply comparing checksums of the archive using a hash function like MD5 or SHA-256.
 
-This Python package provides a `ReproducibleZipFile` class that works exactly like [`zipfile.ZipFile`](https://docs.python.org/3/library/zipfile.html#zipfile-objects) from the Python standard library, except that all files written to the archive have their last-modified timestamps set to a fixed value.
+This Python package provides a `ReproducibleZipFile` class that works exactly like [`zipfile.ZipFile`](https://docs.python.org/3/library/zipfile.html#zipfile-objects) from the Python standard library, except that certain file metadata are set to fixed values. See the ["How does repro-zipfile work?" section](#how-does-repro-zipfile-work) below for details.
 
-You can also optionally install a command-line interface **rpzip**. See the ["rpzip command line program"](#rpzip-command-line-program) section further below.
+You can also optionally install a command-line program, **rpzip**. See the ["rpzip command line program"](#rpzip-command-line-program) section further below.
 
 ## Installation
 
@@ -73,6 +73,8 @@ rpzip archive.zip examples/*.py
 # Archive a directory recursively
 rpzip -r archive.zip examples
 ```
+
+In addition to the fixed file metadata done by repro-zipfile, rpzip will also always sort all paths being written.
 
 ## How does repro-zipfile work?
 
