@@ -1,12 +1,12 @@
-from glob import glob
 import subprocess
 import sys
+from glob import glob
 
+from rpzip import __version__ as rpzip_version
+from rpzip import app
 from typer.testing import CliRunner
 
 from repro_zipfile import __version__ as repro_zipfile_version
-from repro_zipfile_cli import __version__ as repro_zipfile_cli_version
-from repro_zipfile_cli import app
 from tests.utils import assert_archive_contents_equals, dir_tree_factory, file_factory
 
 runner = CliRunner()
@@ -129,15 +129,15 @@ def test_version():
     assert output_lines[0].startswith("repro-zipfile ")
     assert output_lines[0].endswith(f"v{repro_zipfile_version}")
     assert output_lines[1].startswith("rpzip ")
-    assert output_lines[1].endswith(f"v{repro_zipfile_cli_version}")
+    assert output_lines[1].endswith(f"v{rpzip_version}")
 
 
 def test_python_dash_m_invocation():
     result = subprocess.run(
-        [sys.executable, "-m", "repro_zipfile_cli", "--help"],
+        [sys.executable, "-m", "rpzip", "--help"],
         capture_output=True,
         text=True,
         universal_newlines=True,
     )
     assert result.returncode == 0
-    assert "Usage: python -m repro_zipfile_cli" in result.stdout
+    assert "Usage: python -m rpzip" in result.stdout

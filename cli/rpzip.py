@@ -113,4 +113,4 @@ def rpzip(
 
 
 if __name__ == "__main__":
-    app(prog_name="python -m repro_zipfile_cli")
+    app(prog_name="python -m rpzip")

@@ -87,7 +87,7 @@ src = ["*.py", "cli/*.py", "tests/*.py"]
 unfixable = ["F"]
 
 [tool.ruff.isort]
-known-first-party = ["repro_zipfile", "repro_zipfile_cli"]
+known-first-party = ["repro_zipfile", "rpzip"]
 force-sort-within-sections = true
 
 [tool.coverage.run]
