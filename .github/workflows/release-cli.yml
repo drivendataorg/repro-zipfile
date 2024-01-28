@@ -39,16 +39,18 @@ jobs:
           hatch build
 
       - name: Publish to Test PyPI
-        uses: pypa/gh-action-pypi-publish@v1.3.0
+        uses: pypa/gh-action-pypi-publish@v1.8.11
         with:
           user: ${{ secrets.PYPI_TEST_USERNAME }}
           password: ${{ secrets.PYPI_TEST_PASSWORD }}
-          repository_url: https://test.pypi.org/legacy/
-          skip_existing: true
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+          packages-dir: cli/dist/
 
       - name: Publish to Production PyPI
-        uses: pypa/gh-action-pypi-publish@v1.3.0
+        uses: pypa/gh-action-pypi-publish@v1.8.11
         with:
           user: ${{ secrets.PYPI_PROD_USERNAME }}
           password: ${{ secrets.PYPI_PROD_PASSWORD }}
-          skip_existing: false
+          skip-existing: false
+          packages-dir: cli/dist/
