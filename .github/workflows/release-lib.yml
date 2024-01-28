@@ -21,6 +21,7 @@ jobs:
       - name: Install hatch
         run: |
           pip install hatch
+          hatch env create
 
       - name: Check that versions match
         id: version
