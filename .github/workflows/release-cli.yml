@@ -32,7 +32,7 @@ jobs:
           PACKAGE_VERSION=$(hatch run python -c "import rpzip; print(rpzip.__version__)")
           echo "Package version: [$PACKAGE_VERSION]"
           [ "${{ github.ref_name }}" == "cli-v$PACKAGE_VERSION" ] || { exit 1; }
-          echo "::set-output name=major_minor_version::v${PACKAGE_VERSION%.*}"
+          echo "major_minor_version=v${PACKAGE_VERSION%.*}" >> $GITHUB_OUTPUT
 
       - name: Build package
         run: |

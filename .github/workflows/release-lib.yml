@@ -28,24 +28,24 @@ jobs:
           echo "Release tag: [${{ github.ref_name }}]"
           PACKAGE_VERSION=$(hatch run python -c "import repro_zipfile; print(repro_zipfile.__version__)")
           echo "Package version: [$PACKAGE_VERSION]"
-          [ ${{ github.ref_name }} == "v$PACKAGE_VERSION" ] || { exit 1; }
-          echo "::set-output name=major_minor_version::v${PACKAGE_VERSION%.*}"
+          [ "${{ github.ref_name }}" == "v$PACKAGE_VERSION" ] || { exit 1; }
+          echo "major_minor_version=v${PACKAGE_VERSION%.*}" >> $GITHUB_OUTPUT
 
       - name: Build package
         run: |
           hatch build
 
       - name: Publish to Test PyPI
-        uses: pypa/gh-action-pypi-publish@v1.3.0
+        uses: pypa/gh-action-pypi-publish@v1.8.11
         with:
           user: ${{ secrets.PYPI_TEST_USERNAME }}
           password: ${{ secrets.PYPI_TEST_PASSWORD }}
-          repository_url: https://test.pypi.org/legacy/
-          skip_existing: true
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
 
       - name: Publish to Production PyPI
-        uses: pypa/gh-action-pypi-publish@v1.3.0
+        uses: pypa/gh-action-pypi-publish@v1.8.11
         with:
           user: ${{ secrets.PYPI_PROD_USERNAME }}
           password: ${{ secrets.PYPI_PROD_PASSWORD }}
-          skip_existing: false
+          skip-existing: false
