@@ -1,4 +1,8 @@
-# Changelog
+# Changelog — repro-zipfile
+
+## v0.3.0 (2024-01-27)
+
+- Added a `cli` installation extra for installing the rpzip package, which includes a command-line program
 
 ## v0.2.0 (2024-01-08)
 
