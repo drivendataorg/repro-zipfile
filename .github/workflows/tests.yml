@@ -57,6 +57,12 @@ jobs:
         run: |
           pip install hatch
 
+      - name: Install zip on Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          choco install zip
+
+
       - name: Run tests
         run: |
           hatch run tests.py${{ matrix.python-version }}:test
@@ -89,36 +95,12 @@ jobs:
           .venv-sdist/$PYTHON_BIN -m pip install dist/repro_zipfile-*.tar.gz --force-reinstall
           .venv-sdist/$PYTHON_BIN -c "from repro_zipfile import ReproducibleZipFile"
 
-      # - name: Test building documentation
-      #   run: |
-      #     hatch run docs:build
-      #   if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10'
-
-      # - name: Deploy site preview to Netlify
-      #   if: |
-      #     matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10'
-      #     && github.event.pull_request != null
-      #   uses: nwtgck/actions-netlify@v1.1
-      #   with:
-      #     publish-dir: "./site"
-      #     production-deploy: false
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     deploy-message: "Deploy from GitHub Actions"
-      #     enable-pull-request-comment: true
-      #     enable-commit-comment: false
-      #     overwrites-pull-request-comment: true
-      #     alias: deploy-preview-${{ github.event.number }}
-      #   env:
-      #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-      #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-      #   timeout-minutes: 1
-
-  # notify:
-  #   name: Notify failed build
-  #   needs: [code-quality, tests]
-  #   if: failure() && github.event.pull_request == null
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: jayqi/failed-build-issue-action@v1
-  #       with:
-  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  notify:
+    name: Notify failed build
+    needs: [code-quality, tests]
+    if: failure() && github.event.pull_request == null
+    runs-on: ubuntu-latest
+    steps:
+      - uses: jayqi/failed-build-issue-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

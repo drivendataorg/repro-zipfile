@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rpzip"
+dynamic = ["version"]
+description = "A lightweight command-line program for creating reproducible/deterministic ZIP archives."
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = ["zipfile", "zip", "reproducible", "deterministic", "cli"]
+authors = [{ name = "DrivenData", email = "info@drivendata.org" }]
+classifiers = [
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: System :: Archiving",
+  "Topic :: System :: Archiving :: Compression",
+  "Topic :: System :: Archiving :: Packaging",
+]
+dependencies = ["repro-zipfile", "typer>=0.9.0", "typing_extensions>=3.9 ; python_version < '3.9'"]
+
+[project.scripts]
+rpzip = "rpzip:app"
+
+[project.urls]
+Documentation = "https://github.com/drivendataorg/repro-zipfile#readme"
+Issues = "https://github.com/drivendataorg/repro-zipfile/issues"
+Source = "https://github.com/drivendataorg/repro-zipfile/tree/main/cli"
+
+[tool.hatch.version]
+path = "rpzip.py"
+
+## TOOLS ##
+
+[tool.black]
+line-length = 99

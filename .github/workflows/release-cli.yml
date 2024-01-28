@@ -1,14 +1,17 @@
 name: release
 
 on:
-  release:
-    types:
-      - published
+  push:
+    tags:
+      - "cli-v*"
 
 jobs:
   build:
-    name: Build and publish new release
+    name: Publish CLI release
     runs-on: "ubuntu-latest"
+    defaults:
+      run:
+        working-directory: ./cli
 
     steps:
       - uses: actions/checkout@v3
@@ -26,7 +29,7 @@ jobs:
         id: version
         run: |
           echo "Release tag: [${{ github.event.release.tag_name }}]"
-          PACKAGE_VERSION=$(hatch run python -c "import repro_zipfile; print(repro_zipfile.__version__)")
+          PACKAGE_VERSION=$(hatch run rpzip --version)
           echo "Package version: [$PACKAGE_VERSION]"
           [ ${{ github.event.release.tag_name }} == "v$PACKAGE_VERSION" ] || { exit 1; }
           echo "::set-output name=major_minor_version::v${PACKAGE_VERSION%.*}"

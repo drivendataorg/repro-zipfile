@@ -7,11 +7,13 @@
 [![tests](https://github.com/drivendataorg/repro-zipfile/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/drivendataorg/repro-zipfile/actions/workflows/tests.yml?query=branch%3Amain)
 [![codecov](https://codecov.io/gh/drivendataorg/repro-zipfile/branch/main/graph/badge.svg)](https://codecov.io/gh/drivendataorg/repro-zipfile)
 
-**A tiny, zero-dependency replacement for Python's `zipfile.ZipFile` for creating reproducible/deterministic ZIP archives.**
+**A tiny, zero-dependency replacement for Python's `zipfile.ZipFile` library for creating reproducible/deterministic ZIP archives.**
 
 "Reproducible" or "deterministic" in this context means that the binary content of the ZIP archive is identical if you add files with identical binary content in the same order. It means you can reliably check equality of the contents of two ZIP archives by simply comparing checksums of the archive using a hash function like MD5 or SHA-256.
 
-This Python package provides a `ReproducibleZipFile` class that works exactly like [`zipfile.ZipFile`](https://docs.python.org/3/library/zipfile.html#zipfile-objects) from the Python standard library, except that all files written to the archive have their last-modified timestamps set to a fixed value.
+This Python package provides a `ReproducibleZipFile` class that works exactly like [`zipfile.ZipFile`](https://docs.python.org/3/library/zipfile.html#zipfile-objects) from the Python standard library, except that certain file metadata are set to fixed values. See the ["How does repro-zipfile work?" section](#how-does-repro-zipfile-work) below for details.
+
+You can also optionally install a command-line program, **rpzip**. See the ["rpzip command line program"](#rpzip-command-line-program) section further below.
 
 ## Installation
 
@@ -45,7 +47,34 @@ Note that files must be written to the archive in the same order to reproduce an
 
 See [`examples/usage.py`](./examples/usage.py) for an example script that you can run, and [`examples/demo_vs_zipfile.py`](./examples/demo_vs_zipfile.py) for a demonstration in contrast with the standard library's zipfile module.
 
-For more advanced usage, such as customizing the fixed metadata values, see the following section.
+For more advanced usage, such as customizing the fixed metadata values, see the subsections under ["How does repro-zipfile work?"](#how-does-repro-zipfile-work).
+
+## rpzip command-line program
+
+[![PyPI](https://img.shields.io/pypi/v/rpzip.svg)](https://pypi.org/project/rpzip/)
+
+You can optionally install a lightweight command-line program, **rpzip**. This includes an additional dependency on the [typer](https://typer.tiangolo.com/) CLI framework. You can install it either directly or using the `cli` extra with repro-zipfile:
+
+```bash
+pip install rpzip
+# or
+pip install repro-zipfile[cli]
+```
+
+rpzip is designed to a partial drop-in replacement ubiquitous [zip](https://linux.die.net/man/1/zip) program. Use `rpzip --help` to see the documentation. Here are some usage examples:
+
+```bash
+# Archive a single file
+rpzip archive.zip examples/data.txt
+# Archive multiple files
+rpzip archive.zip examples/data.txt README.md
+# Archive multiple files with a shell glob
+rpzip archive.zip examples/*.py
+# Archive a directory recursively
+rpzip -r archive.zip examples
+```
+
+In addition to the fixed file metadata done by repro-zipfile, rpzip will also always sort all paths being written.
 
 ## How does repro-zipfile work?
 
