@@ -47,12 +47,12 @@ pre-install-commands = [
   "pip install -e cli",
 ]
 features = ["cli", "tests"]
-dependencies = ["black>=23.1.0", "mypy>=1.0.0", "ruff>=0.0.243"]
+dependencies = ["mypy>=1.0.0", "ruff>=0.1.14"]
 python = "3.10"
 path = ".venv"
 
 [tool.hatch.envs.default.scripts]
-lint = ["black --check {args:.}", "ruff check {args:.}"]
+lint = ["ruff format --check {args:.}", "ruff check {args:.}"]
 typecheck = ["mypy {args:repro_zipfile.py} --install-types --non-interactive"]
 
 ## TESTS ENVIRONMENT ##
@@ -72,9 +72,6 @@ python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
 test = "pytest {args:tests} -v --cov=. --cov=./cli --cov-report=term --cov-report=html --cov-report=xml"
 
 ## TOOLS ##
-
-[tool.black]
-line-length = 99
 
 [tool.ruff]
 line-length = 99
