@@ -30,7 +30,7 @@ dependencies = []
 
 [project.optional-dependencies]
 cli = ["rpzip"]
-tests = ["pytest>=6", "pytest-cases"]
+tests = ["pytest>=6,<8", "pytest-cases"]
 
 [project.urls]
 Documentation = "https://github.com/drivendataorg/repro-zipfile#readme"
