@@ -1,4 +1,4 @@
-name: release
+name: release-cli
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
         id: version
         run: |
           echo "Release tag: [${{ github.event.release.tag_name }}]"
-          PACKAGE_VERSION=$(hatch run rpzip --version)
+          PACKAGE_VERSION=$(hatch run python -c "import rpzip; print(rpzip.__version__)")
           echo "Package version: [$PACKAGE_VERSION]"
           [ ${{ github.event.release.tag_name }} == "v$PACKAGE_VERSION" ] || { exit 1; }
           echo "::set-output name=major_minor_version::v${PACKAGE_VERSION%.*}"
