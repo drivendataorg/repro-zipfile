@@ -21,7 +21,7 @@ def date_time() -> Union[time.struct_time, Tuple[int, int, int, int, int, int]]:
     """
     source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH", None)
     if source_date_epoch is not None:
-        return time.localtime(int(source_date_epoch))
+        return time.gmtime(int(source_date_epoch))
     return (1980, 1, 1, 0, 0, 0)
 
 
