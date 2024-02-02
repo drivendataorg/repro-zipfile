@@ -13,7 +13,7 @@ import typer
 from repro_zipfile import ReproducibleZipFile
 from repro_zipfile import __version__ as repro_zipfile_version
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 app = typer.Typer()
 
