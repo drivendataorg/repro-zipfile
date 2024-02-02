@@ -1,5 +1,9 @@
 # Changelog — repro-zipfile
 
+## v0.3.1 (2024-02-02)
+
+- Fixed bug that caused timestamps set by `SOURCE_DATE_EPOCH` to be affected by the local system timezone. It now always uses UTC. ([PR #8](https://github.com/drivendataorg/repro-zipfile/pull/8) from [@thatch](https://github.com/thatch))
+
 ## v0.3.0 (2024-01-27)
 
 - Added a `cli` installation extra for installing the rpzip package, which includes a command-line program
