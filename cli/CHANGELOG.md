@@ -1,6 +1,6 @@
 # Changelog — rpzip
 
-## v0.1.1 (2024-02-01)
+## v0.1.1 (2024-02-02)
 
 - Fixed misformatted `--version` output.
 
