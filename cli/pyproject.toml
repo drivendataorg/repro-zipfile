@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "A lightweight command-line program for creating reproducible/deterministic ZIP archives."
 readme = "README.md"
 requires-python = ">=3.8"
-license = "MIT"
+license = { text = "MIT License" }
 keywords = ["zipfile", "zip", "reproducible", "deterministic", "cli"]
 authors = [{ name = "DrivenData", email = "info@drivendata.org" }]
 classifiers = [

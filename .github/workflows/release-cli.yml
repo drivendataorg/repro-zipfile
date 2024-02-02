@@ -24,13 +24,12 @@ jobs:
       - name: Install hatch
         run: |
           pip install hatch
-          hatch env create
 
       - name: Check that versions match
         id: version
         run: |
           echo "Release tag: [${{ github.ref_name }}]"
-          PACKAGE_VERSION=$(hatch run python -c "import rpzip; print(rpzip.__version__)")
+          PACKAGE_VERSION=$(hatch version)
           echo "Package version: [$PACKAGE_VERSION]"
           [ "${{ github.ref_name }}" == "cli-v$PACKAGE_VERSION" ] || { exit 1; }
           echo "major_minor_version=v${PACKAGE_VERSION%.*}" >> $GITHUB_OUTPUT
