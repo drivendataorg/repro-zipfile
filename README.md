@@ -15,6 +15,8 @@ This Python package provides a `ReproducibleZipFile` class that works exactly li
 
 You can also optionally install a command-line program, **rpzip**. See ["rpzip command line program"](#rpzip-command-line-program) below for more information.
 
+_Looking instead to create reproducible/deterministic tar archives? Check out our sister package, [repro-tarfile](https://github.com/drivendataorg/repro-tarfile)!_
+
 ## Installation
 
 repro-zipfile is available from PyPI. To install, run:
@@ -53,12 +55,12 @@ For more advanced usage, such as customizing the fixed metadata values, see the 
 
 [![PyPI](https://img.shields.io/pypi/v/rpzip.svg)](https://pypi.org/project/rpzip/)
 
-You can optionally install a lightweight command-line program, **rpzip**. This includes an additional dependency on the [typer](https://typer.tiangolo.com/) CLI framework. You can install it either directly or using the `cli` extra with repro-zipfile:
+You can optionally install a lightweight command-line program, **rpzip**. This includes an additional dependency on the [typer](https://typer.tiangolo.com/) CLI framework. You can install it either directly or using the `cli` extra with repro-zipfile. We recommend you use [pipx](https://github.com/pypa/pipx) for installing Python CLIs into isolated virtual environments. You can also install it with regular pip, too.
 
 ```bash
-pip install rpzip
+pipx install rpzip
 # or
-pip install repro-zipfile[cli]
+pipx install repro-zipfile[cli]
 ```
 
 rpzip is designed to a partial drop-in replacement ubiquitous [zip](https://linux.die.net/man/1/zip) program. Use `rpzip --help` to see the documentation. Here are some usage examples:
