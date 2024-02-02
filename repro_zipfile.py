@@ -11,7 +11,7 @@ try:
 except ImportError:
     _MASK_COMPRESS_OPTION_1 = 0x02
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 
 def date_time() -> Union[time.struct_time, Tuple[int, int, int, int, int, int]]:
@@ -21,7 +21,7 @@ def date_time() -> Union[time.struct_time, Tuple[int, int, int, int, int, int]]:
     """
     source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH", None)
     if source_date_epoch is not None:
-        return time.localtime(int(source_date_epoch))
+        return time.gmtime(int(source_date_epoch))
     return (1980, 1, 1, 0, 0, 0)
 
 
