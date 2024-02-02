@@ -1,6 +1,11 @@
 import platform
-from time import sleep, tzset
+from time import sleep
 from zipfile import ZipFile, ZipInfo
+
+try:
+    from time import tzset
+except ImportError:
+    tzset = None
 
 from repro_zipfile import ReproducibleZipFile
 from tests.utils import (
@@ -195,8 +200,9 @@ def test_write_single_file_source_date_epoch(base_path, monkeypatch):
         zp.write(data_file)
 
     monkeypatch.setenv("SOURCE_DATE_EPOCH", "1691732367")
-    monkeypatch.setenv("TZ", "America/Chicago")
-    tzset()
+    if tzset:
+        monkeypatch.setenv("TZ", "America/Chicago")
+        tzset()
 
     # With SOURCE_DATE_EPOCH set
     arc_sde1 = base_path / "with_sde1.zip"
@@ -205,8 +211,10 @@ def test_write_single_file_source_date_epoch(base_path, monkeypatch):
 
     sleep(2)
     data_file.touch()
-    monkeypatch.setenv("TZ", "America/Los_Angeles")
-    tzset()
+    if tzset:
+        # Set a different timezone to make sure it doesn't affect the set time
+        monkeypatch.setenv("TZ", "America/Los_Angeles")
+        tzset()
 
     arc_sde2 = base_path / "with_sde2.zip"
     with ReproducibleZipFile(arc_sde2, "w") as zp:
