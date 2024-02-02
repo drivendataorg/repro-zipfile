@@ -3,9 +3,9 @@ from pathlib import Path
 import sys
 from typing import List, Optional
 
-try:
+if sys.version_info >= (3, 9):
     from typing import Annotated
-except ImportError:
+else:
     from typing_extensions import Annotated
 
 import typer
@@ -25,7 +25,7 @@ logger.addHandler(logging.NullHandler())
 def version_callback(value: bool):
     if value:
         print(f"repro-zipfile v{repro_zipfile_version}")
-        print(f"rpzip (rpzip) v{__version__}")
+        print(f"rpzip v{__version__}")
         raise typer.Exit()
 
 
