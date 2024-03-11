@@ -1,5 +1,4 @@
-"""Basic usage example of repro_zipfile.
-"""
+"""Basic usage example of repro_zipfile."""
 
 from pathlib import Path
 
