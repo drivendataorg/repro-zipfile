@@ -53,7 +53,7 @@ path = ".venv"
 
 [tool.hatch.envs.default.scripts]
 lint = ["ruff format --check {args:.}", "ruff check {args:.}"]
-typecheck = ["mypy {args:repro_zipfile.py cli/rpzip.py} --install-types --non-interactive"]
+typecheck = ["mypy . --install-types --non-interactive"]
 
 ## TESTS ENVIRONMENT ##
 
