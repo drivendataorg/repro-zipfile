@@ -91,3 +91,6 @@ force-sort-within-sections = true
 
 [tool.coverage.run]
 omit = ["tests/*"]
+
+[tool.mypy]
+strict = true

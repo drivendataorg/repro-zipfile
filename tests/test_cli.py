@@ -1,6 +1,7 @@
 from glob import glob
 import subprocess
 import sys
+from pathlib import Path
 
 from typer.testing import CliRunner
 
@@ -12,7 +13,7 @@ from tests.utils import assert_archive_contents_equals, dir_tree_factory, file_f
 runner = CliRunner()
 
 
-def test_zip_single_file(base_path):
+def test_zip_single_file(base_path: Path) -> None:
     data_file = file_factory(base_path)
 
     rpzip_out = base_path / "rpzip.zip"
@@ -28,7 +29,7 @@ def test_zip_single_file(base_path):
     assert_archive_contents_equals(rpzip_out, zip_out)
 
 
-def test_zip_directory(base_path):
+def test_zip_directory(base_path: Path) -> None:
     """Single directory, not recursive."""
     dir_tree = dir_tree_factory(base_path)
 
@@ -45,7 +46,7 @@ def test_zip_directory(base_path):
     assert_archive_contents_equals(rpzip_out, zip_out)
 
 
-def test_zip_directory_recursive(base_path):
+def test_zip_directory_recursive(base_path: Path) -> None:
     """Single input directory with recursive -r flag."""
     dir_tree = dir_tree_factory(base_path)
 
@@ -62,7 +63,7 @@ def test_zip_directory_recursive(base_path):
     assert_archive_contents_equals(rpzip_out, zip_out)
 
 
-def test_zip_multiple_recursive(base_path):
+def test_zip_multiple_recursive(base_path: Path) -> None:
     """Mulitiple input files with recursive -r flag."""
     dir_tree = dir_tree_factory(base_path)
 
@@ -79,7 +80,7 @@ def test_zip_multiple_recursive(base_path):
     assert_archive_contents_equals(rpzip_out, zip_out)
 
 
-def test_zip_no_suffix(base_path):
+def test_zip_no_suffix(base_path: Path) -> None:
     data_file = file_factory(base_path)
 
     rpzip_out = base_path / "rpzip.zip"
@@ -95,7 +96,7 @@ def test_zip_no_suffix(base_path):
     assert_archive_contents_equals(rpzip_out, zip_out)
 
 
-def test_verbosity(rel_path):
+def test_verbosity(rel_path: Path) -> None:
     """Adjustment of verbosity with -v and -q."""
     data_file = file_factory(rel_path)
     rpzip_out = rel_path / "rpzip.zip"
@@ -121,7 +122,7 @@ def test_verbosity(rel_path):
     assert rpzip_result.output.strip() == ""
 
 
-def test_version():
+def test_version() -> None:
     """With --version flag."""
     result = runner.invoke(app, ["--version"])
     assert result.exit_code == 0
@@ -132,7 +133,7 @@ def test_version():
     assert output_lines[1].endswith(f"v{rpzip_version}")
 
 
-def test_python_dash_m_invocation():
+def test_python_dash_m_invocation() -> None:
     result = subprocess.run(
         [sys.executable, "-m", "rpzip", "--help"],
         capture_output=True,

@@ -1,3 +1,4 @@
+from typing import Generator
 from contextlib import contextmanager
 import hashlib
 import os
@@ -28,7 +29,7 @@ def file_factory(parent_dir: Path) -> Path:
     return path
 
 
-def dir_tree_factory(parent_dir: Path):
+def dir_tree_factory(parent_dir: Path) -> Path:
     """Utility function to generate a directory tree containing files with random data."""
     root_dir = parent_dir / data_factory()
     root_dir.mkdir()
@@ -46,19 +47,19 @@ def dir_tree_factory(parent_dir: Path):
 
 
 @contextmanager
-def umask(mask: int):
+def umask(mask: int) -> Generator[int, None, None]:
     """Utility context manager to temporarily set umask to a new value."""
     old_mask = os.umask(mask)
     yield mask
     os.umask(old_mask)
 
 
-def hash_file(path: Path):
+def hash_file(path: Path) -> str:
     """Utility function to calculate the hash of a file's contents."""
     return hashlib.md5(path.read_bytes()).hexdigest()
 
 
-def assert_archive_contents_equals(arc1: Path, arc2: Path):
+def assert_archive_contents_equals(arc1: Path, arc2: Path) -> None:
     with TemporaryDirectory() as outdir1, TemporaryDirectory() as outdir2:
         with ZipFile(arc1, "r") as zp:
             zp.extractall(outdir1)

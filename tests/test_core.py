@@ -3,6 +3,9 @@ import platform
 from time import sleep
 from zipfile import ZipFile, ZipInfo
 from typing import TYPE_CHECKING
+from pathlib import Path
+
+import pytest
 
 if TYPE_CHECKING:
     if sys.platform != "win32":
@@ -26,7 +29,7 @@ from tests.utils import (
 )
 
 
-def test_write_dir_tree_mtime(base_path):
+def test_write_dir_tree_mtime(base_path: Path) -> None:
     """Archiving a directory tree works with different modified time."""
     dir_tree = dir_tree_factory(base_path)
 
@@ -69,7 +72,7 @@ def test_write_dir_tree_mtime(base_path):
     assert hash_file(zipfile_arc1) != hash_file(zipfile_arc2)
 
 
-def test_write_dir_tree_mode(base_path):
+def test_write_dir_tree_mode(base_path: Path) -> None:
     """Archiving a directory tree works with different permission modes."""
     with umask(0o022):
         dir_tree = dir_tree_factory(base_path)
@@ -119,7 +122,7 @@ def test_write_dir_tree_mode(base_path):
         assert hash_file(zipfile_arc1) != hash_file(zipfile_arc2)
 
 
-def test_write_dir_tree_string_paths(rel_path):
+def test_write_dir_tree_string_paths(rel_path: Path) -> None:
     """Archiving a directory tree works."""
     dir_tree = dir_tree_factory(rel_path)
 
@@ -162,7 +165,7 @@ def test_write_dir_tree_string_paths(rel_path):
     assert hash_file(zipfile_arc1) != hash_file(zipfile_arc2)
 
 
-def test_write_single_file(base_path):
+def test_write_single_file(base_path: Path) -> None:
     """Writing the same file with different mtime produces the same hash."""
     data_file = file_factory(base_path)
 
@@ -197,7 +200,9 @@ def test_write_single_file(base_path):
     assert hash_file(zip1) != hash_file(zip2)
 
 
-def test_write_single_file_source_date_epoch(base_path, monkeypatch):
+def test_write_single_file_source_date_epoch(
+    base_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """Writing the same file with different mtime with SOURCE_DATE_EPOCH set produces the
     same hash."""
 
@@ -237,7 +242,9 @@ def test_write_single_file_source_date_epoch(base_path, monkeypatch):
     assert hash_file(arc_sde1) == hash_file(arc_sde2)
 
 
-def test_write_single_file_file_mode_env_var(rel_path, monkeypatch):
+def test_write_single_file_file_mode_env_var(
+    rel_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """REPRO_ZIPFILE_FILE_MODE environment variable works."""
 
     with umask(0o002):
@@ -257,7 +264,7 @@ def test_write_single_file_file_mode_env_var(rel_path, monkeypatch):
     assert mode == 0o600, (oct(mode), oct(0o600))
 
 
-def test_write_single_file_string_paths(rel_path):
+def test_write_single_file_string_paths(rel_path: Path) -> None:
     """Writing the same file with different mtime produces the same hash, using string inputs
     instead of Path."""
     data_file = file_factory(rel_path)
@@ -293,7 +300,7 @@ def test_write_single_file_string_paths(rel_path):
     assert hash_file(zip1) != hash_file(zip2)
 
 
-def test_write_single_file_arcname(base_path):
+def test_write_single_file_arcname(base_path: Path) -> None:
     """Writing a single file with explicit arcname."""
     data_file = file_factory(base_path)
 
@@ -326,7 +333,9 @@ def test_write_single_file_arcname(base_path):
     assert hash_file(zip1) != hash_file(zip2)
 
 
-def test_write_single_dir_dir_mode_env_var(rel_path, monkeypatch):
+def test_write_single_dir_dir_mode_env_var(
+    rel_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """REPRO_ZIPFILE_DIR_MODE environment variable works."""
 
     with umask(0o002):
@@ -347,7 +356,7 @@ def test_write_single_dir_dir_mode_env_var(rel_path, monkeypatch):
     assert mode == 0o700, (oct(mode), oct(0o700))
 
 
-def test_writestr(tmp_path):
+def test_writestr(tmp_path: Path) -> None:
     """writestr works as expected"""
     data = data_factory()
 
@@ -379,7 +388,7 @@ def test_writestr(tmp_path):
     assert hash_file(zip1) != hash_file(zip2)
 
 
-def test_writestr_zip_info(rel_path):
+def test_writestr_zip_info(rel_path: Path) -> None:
     """writestr with ZipInfo input"""
     data = data_factory()
     data_file = rel_path / "data.txt"
@@ -414,7 +423,7 @@ def test_writestr_zip_info(rel_path):
     assert hash_file(zip1) != hash_file(zip2)
 
 
-def test_writestr_source_date_epoch(tmp_path, monkeypatch):
+def test_writestr_source_date_epoch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test that using writestr with the same data at different times with SOURCE_DATE_EPOCH set
     produces the same hash."""
 
@@ -445,7 +454,7 @@ def test_writestr_source_date_epoch(tmp_path, monkeypatch):
     assert hash_file(arc_sde1) == hash_file(arc_sde2)
 
 
-def test_mkdir(rel_path):
+def test_mkdir(rel_path: Path) -> None:
     """mkdir is a Python 3.11+ method that we've backported to ReproducibleZipFile for <3.11, so
     that we can use the 3.11 implementation of write. Other tests don't cover direct use with a
     string input. Test that this is the same as writing a directory with ZipFile.

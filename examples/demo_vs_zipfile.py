@@ -7,13 +7,14 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from time import sleep
 from zipfile import ZipFile
+from typing import Type
 
 from repro_zipfile import ReproducibleZipFile
 
 example_dir = Path(__file__).parent
 
 
-def create_archive(zip_class, outfile: Path):
+def create_archive(zip_class: Type[ZipFile], outfile: Path) -> None:
     with zip_class(outfile, "w") as zp:
         # Use write to add a file to the archive
         zp.write(example_dir / "data.txt", arcname="data.txt")
