@@ -38,7 +38,7 @@ Issues = "https://github.com/drivendataorg/repro-zipfile/issues"
 Source = "https://github.com/drivendataorg/repro-zipfile"
 
 [tool.hatch.version]
-path = "repro_zipfile.py"
+path = "repro_zipfile/__init__.py"
 
 ## DEFAULT ENVIRONMENT ##
 

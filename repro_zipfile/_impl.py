@@ -11,8 +11,6 @@ try:
 except ImportError:
     _MASK_COMPRESS_OPTION_1 = 0x02
 
-__version__ = "0.3.1"
-
 
 def date_time() -> Union[time.struct_time, Tuple[int, int, int, int, int, int]]:
     """Returns date_time value used to force overwrite on all ZipInfo objects. Defaults to
