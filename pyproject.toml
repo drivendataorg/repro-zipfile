@@ -52,6 +52,7 @@ python = "3.10"
 path = ".venv"
 
 [tool.hatch.envs.default.scripts]
+format = ["ruff check --fix {args:.}", "ruff format {args:.}"]
 lint = ["ruff format --check {args:.}", "ruff check {args:.}"]
 typecheck = ["mypy {args:repro_zipfile.py cli/rpzip.py} --install-types --non-interactive"]
 
@@ -75,17 +76,17 @@ test = "pytest {args:tests} -v --cov=. --cov=./cli --cov-report=term --cov-repor
 
 [tool.ruff]
 line-length = 99
+src = ["*.py", "cli/*.py", "tests/*.py"]
 
-[tool.lint]
+[tool.ruff.lint]
 select = [
   "E", # Pyflakes
   "F", # Pycodestyle
   "I", # isort
 ]
-src = ["*.py", "cli/*.py", "tests/*.py"]
 unfixable = ["F"]
 
-[tool.lint.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["repro_zipfile", "rpzip"]
 force-sort-within-sections = true
 
