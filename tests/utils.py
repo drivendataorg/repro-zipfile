@@ -2,6 +2,7 @@ from contextlib import contextmanager
 import hashlib
 import os
 from pathlib import Path
+import re
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
 
@@ -75,3 +76,11 @@ def assert_archive_contents_equals(arc1: Path, arc2: Path):
             assert arc1_member.is_file() == arc2_member.is_file()
             if arc1_member.is_file():
                 assert hash_file(arc1_member) == hash_file(arc2_member)
+
+
+# https://stackoverflow.com/a/14693789/5957621
+ANSI_ESCAPE_REGEX = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
+
+
+def remove_ansi_escape(s: str) -> str:
+    return ANSI_ESCAPE_REGEX.sub("", s)

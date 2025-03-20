@@ -7,7 +7,12 @@ from typer.testing import CliRunner
 from repro_zipfile import __version__ as repro_zipfile_version
 from rpzip import __version__ as rpzip_version
 from rpzip import app
-from tests.utils import assert_archive_contents_equals, dir_tree_factory, file_factory
+from tests.utils import (
+    assert_archive_contents_equals,
+    dir_tree_factory,
+    file_factory,
+    remove_ansi_escape,
+)
 
 runner = CliRunner()
 
@@ -140,4 +145,4 @@ def test_python_dash_m_invocation():
         universal_newlines=True,
     )
     assert result.returncode == 0
-    assert "Usage: python -m rpzip" in result.stdout
+    assert "Usage: python -m rpzip" in remove_ansi_escape(result.stdout)
