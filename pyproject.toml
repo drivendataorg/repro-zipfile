@@ -22,6 +22,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: System :: Archiving",
   "Topic :: System :: Archiving :: Compression",
   "Topic :: System :: Archiving :: Packaging",
@@ -43,6 +44,7 @@ path = "repro_zipfile.py"
 ## DEFAULT ENVIRONMENT ##
 
 [tool.hatch.envs.default]
+installer = "uv"
 pre-install-commands = [
   "pip install -e . -e cli",
 ]
@@ -59,18 +61,19 @@ typecheck = ["mypy {args:repro_zipfile.py cli/rpzip.py} --install-types --non-in
 ## TESTS ENVIRONMENT ##
 
 [tool.hatch.envs.tests]
+installer = "uv"
 pre-install-commands = [
-  "pip install -e . -e cli",
+  "uv pip install -e . -e cli",
 ]
 features = ["tests", "cli"]
 dependencies = ["coverage>=6.5", "pytest-cov"]
 template = "tests"
 
 [[tool.hatch.envs.tests.matrix]]
-python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
 
 [tool.hatch.envs.tests.scripts]
-test = "pytest {args:tests} -v --cov=. --cov=./cli --cov-report=term --cov-report=html --cov-report=xml"
+test = "python -Im pytest {args:tests} -v --cov=. --cov=./cli --cov-report=term --cov-report=html --cov-report=xml"
 
 ## TOOLS ##
 
