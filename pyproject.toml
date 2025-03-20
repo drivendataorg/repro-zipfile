@@ -22,6 +22,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: System :: Archiving",
   "Topic :: System :: Archiving :: Compression",
   "Topic :: System :: Archiving :: Packaging",
@@ -43,6 +44,7 @@ path = "repro_zipfile/__init__.py"
 ## DEFAULT ENVIRONMENT ##
 
 [tool.hatch.envs.default]
+installer = "uv"
 pre-install-commands = [
   "pip install -e . -e cli",
 ]
@@ -52,40 +54,42 @@ python = "3.10"
 path = ".venv"
 
 [tool.hatch.envs.default.scripts]
+format = ["ruff check --fix {args:.}", "ruff format {args:.}"]
 lint = ["ruff format --check {args:.}", "ruff check {args:.}"]
 typecheck = ["mypy . --install-types --non-interactive"]
 
 ## TESTS ENVIRONMENT ##
 
 [tool.hatch.envs.tests]
+installer = "uv"
 pre-install-commands = [
-  "pip install -e . -e cli",
+  "uv pip install -e . -e cli",
 ]
 features = ["tests", "cli"]
 dependencies = ["coverage>=6.5", "pytest-cov"]
 template = "tests"
 
 [[tool.hatch.envs.tests.matrix]]
-python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
 
 [tool.hatch.envs.tests.scripts]
-test = "pytest {args:tests} -v --cov=. --cov=./cli --cov-report=term --cov-report=html --cov-report=xml"
+test = "python -Im pytest {args:tests} -v --cov=. --cov=./cli --cov-report=term --cov-report=html --cov-report=xml"
 
 ## TOOLS ##
 
 [tool.ruff]
 line-length = 99
+src = ["*.py", "cli/*.py", "tests/*.py"]
 
-[tool.lint]
+[tool.ruff.lint]
 select = [
   "E", # Pyflakes
   "F", # Pycodestyle
   "I", # isort
 ]
-src = ["*.py", "cli/*.py", "tests/*.py"]
 unfixable = ["F"]
 
-[tool.lint.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["repro_zipfile", "rpzip"]
 force-sort-within-sections = true
 
