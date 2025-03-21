@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
 
-def version_callback(value: bool) -> None:
+def version_callback(value: bool):
     if value:
         print(f"repro-zipfile v{repro_zipfile_version}")
         print(f"rpzip v{__version__}")
@@ -67,7 +67,7 @@ def rpzip(
             callback=version_callback,
         ),
     ] = None,
-) -> None:
+):
     """A lightweight replacement for zip for most simple cases. Use it to compress and package
     files in ZIP archives, but reproducibly/deterministicly.
 

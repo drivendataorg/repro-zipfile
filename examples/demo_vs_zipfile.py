@@ -6,8 +6,8 @@ import hashlib
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from time import sleep
-from zipfile import ZipFile
 from typing import Type
+from zipfile import ZipFile
 
 from repro_zipfile import ReproducibleZipFile
 

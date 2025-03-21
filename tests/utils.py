@@ -1,10 +1,10 @@
-from typing import Generator
 from contextlib import contextmanager
 import hashlib
 import os
 from pathlib import Path
 import re
 from tempfile import TemporaryDirectory
+from typing import Iterator
 from zipfile import ZipFile
 
 
@@ -30,7 +30,7 @@ def file_factory(parent_dir: Path) -> Path:
     return path
 
 
-def dir_tree_factory(parent_dir: Path) -> Path:
+def dir_tree_factory(parent_dir: Path):
     """Utility function to generate a directory tree containing files with random data."""
     root_dir = parent_dir / data_factory()
     root_dir.mkdir()
@@ -48,7 +48,7 @@ def dir_tree_factory(parent_dir: Path) -> Path:
 
 
 @contextmanager
-def umask(mask: int) -> Generator[int, None, None]:
+def umask(mask: int) -> Iterator[int]:
     """Utility context manager to temporarily set umask to a new value."""
     old_mask = os.umask(mask)
     yield mask

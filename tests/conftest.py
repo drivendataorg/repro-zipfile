@@ -1,5 +1,4 @@
 import os
-from typing import Generator
 from pathlib import Path
 
 import pytest
@@ -7,13 +6,13 @@ from pytest_cases import fixture_union
 
 
 @pytest.fixture
-def abs_path(tmp_path: Path) -> Path:
+def abs_path(tmp_path):
     """Fixture that returns a temporary directory as an absolute Path object."""
     return tmp_path
 
 
 @pytest.fixture
-def rel_path(tmp_path: Path) -> Generator[Path, None, None]:
+def rel_path(tmp_path):
     """Fixture that sets a temporary directory as the current working directory and returns a
     relative path to it."""
     orig_wd = Path.cwd()
