@@ -56,7 +56,10 @@ path = ".venv"
 [tool.hatch.envs.default.scripts]
 format = ["ruff check --fix {args:.}", "ruff format {args:.}"]
 lint = ["ruff format --check {args:.}", "ruff check {args:.}"]
-typecheck = ["mypy . --install-types --non-interactive"]
+typecheck = [
+  "mypy . --install-types --non-interactive",
+  "python -m mypy.stubtest repro_zipfile",
+]
 
 ## TESTS ENVIRONMENT ##
 
@@ -79,7 +82,7 @@ test = "python -Im pytest {args:tests} -v --cov=. --cov=./cli --cov-report=term 
 
 [tool.ruff]
 line-length = 99
-src = ["*.py", "cli/*.py", "tests/*.py"]
+src = ["repro_zipfile", "cli", "tests", "examples"]
 
 [tool.ruff.lint]
 select = [
@@ -97,20 +100,7 @@ force-sort-within-sections = true
 omit = ["tests/*"]
 
 [tool.mypy]
-warn_unused_configs = true
-warn_redundant_casts = true
+exclude = '\.pyi$'
 
 [[tool.mypy.overrides]]
 module = "repro_zipfile.*"
-disallow_any_generics = true
-disallow_subclassing_any = true
-disallow_untyped_calls = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_untyped_decorators = true
-warn_unused_ignores = true
-warn_return_any = true
-no_implicit_reexport = true
-strict_equality = true
-extra_checks = true

@@ -3,7 +3,7 @@ import os
 import shutil
 import sys
 import time
-from typing import TYPE_CHECKING
+from typing import Tuple
 from zipfile import ZIP_LZMA, ZipFile, ZipInfo
 
 try:
@@ -11,23 +11,20 @@ try:
 except ImportError:
     _MASK_COMPRESS_OPTION_1 = 0x02
 
-if TYPE_CHECKING:
-    from _typeshed import SizedBuffer, StrPath
-
 __all__ = ["date_time", "file_mode", "dir_mode", "ReproducibleZipFile"]
 
 __version__ = "0.3.1"
 
 
-def date_time() -> time.struct_time:
+def date_time() -> Tuple[int, int, int, int, int, int]:
     """Returns date_time value used to force overwrite on all ZipInfo objects. Defaults to
     1980-01-01 00:00:00. You can set this with the environment variable SOURCE_DATE_EPOCH as an
     integer value representing seconds since Epoch.
     """
     source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH", None)
     if source_date_epoch is not None:
-        return time.gmtime(int(source_date_epoch))
-    return time.struct_time((1980, 1, 1, 0, 0, 0, 0, 0, 0))
+        return time.gmtime(int(source_date_epoch))[:6]
+    return (1980, 1, 1, 0, 0, 0)
 
 
 def file_mode() -> int:
@@ -69,30 +66,20 @@ class ReproducibleZipFile(ZipFile):
     # https://github.com/python/cpython/blob/202efe1a3bcd499f3bf17bd953c6d36d47747e78/Lib/zipfile.py#L1763-L1794
     # Copyright Python Software Foundation, licensed under PSF License Version 2
     # See LICENSE file for full license agreement and notice of copyright
-    def write(
-        self,
-        filename: "StrPath",
-        arcname: "StrPath" | None = None,
-        compress_type: int | None = None,
-        compresslevel: int | None = None,
-    ) -> None:
+    def write(self, filename, arcname=None, compress_type=None, compresslevel=None):
         """Put the bytes from filename into the archive under the name arcname."""
 
         if not self.fp:
             raise ValueError("Attempt to write to ZIP archive that was already closed")
-        if self._writing:  # type: ignore[attr-defined]
+        if self._writing:
             raise ValueError("Can't write to ZIP archive while an open writing handle exists")
 
-        zinfo = ZipInfo.from_file(
-            filename,
-            arcname,
-            strict_timestamps=self._strict_timestamps,  # type: ignore[attr-defined]
-        )
+        zinfo = ZipInfo.from_file(filename, arcname, strict_timestamps=self._strict_timestamps)
 
         ## repro-zipfile ADDED ##
         # Overwrite date_time and extrnal_attr (permissions mode)
         zinfo = copy(zinfo)
-        zinfo.date_time = date_time()[:6]
+        zinfo.date_time = date_time()
         if zinfo.is_dir():
             zinfo.external_attr = (0o40000 | dir_mode()) << 16
             zinfo.external_attr |= 0x10  # MS-DOS directory flag
@@ -111,9 +98,9 @@ class ReproducibleZipFile(ZipFile):
                 zinfo.compress_type = self.compression
 
             if compresslevel is not None:
-                zinfo._compresslevel = compresslevel  # type: ignore[attr-defined]
+                zinfo._compresslevel = compresslevel
             else:
-                zinfo._compresslevel = self.compresslevel  # type: ignore[attr-defined]
+                zinfo._compresslevel = self.compresslevel
 
             with open(filename, "rb") as src, self.open(zinfo, "w") as dest:
                 shutil.copyfileobj(src, dest, 1024 * 8)
@@ -122,13 +109,7 @@ class ReproducibleZipFile(ZipFile):
     # https://github.com/python/cpython/blob/202efe1a3bcd499f3bf17bd953c6d36d47747e78/Lib/zipfile.py#L1796-L1835
     # Copyright Python Software Foundation, licensed under PSF License Version 2
     # See LICENSE file for full license agreement and notice of copyright
-    def writestr(
-        self,
-        zinfo_or_arcname: str | ZipInfo,
-        data: "SizedBuffer" | str,
-        compress_type: int | None = None,
-        compresslevel: int | None = None,
-    ) -> None:
+    def writestr(self, zinfo_or_arcname, data, compress_type=None, compresslevel=None):
         """Write a file into the archive.  The contents is 'data', which may be either a 'str' or
         a 'bytes' instance; if it is a 'str', it is encoded as UTF-8 first. 'zinfo_or_arcname' is
         either a ZipInfo instance or the name of the file in the archive."""
@@ -137,7 +118,7 @@ class ReproducibleZipFile(ZipFile):
         if not isinstance(zinfo_or_arcname, ZipInfo):
             zinfo = ZipInfo(filename=zinfo_or_arcname, date_time=time.localtime(time.time())[:6])
             zinfo.compress_type = self.compression
-            zinfo._compresslevel = self.compresslevel  # type: ignore[attr-defined]
+            zinfo._compresslevel = self.compresslevel
             if zinfo.filename.endswith("/"):
                 zinfo.external_attr = 0o40775 << 16  # drwxrwxr-x
                 zinfo.external_attr |= 0x10  # MS-DOS directory flag
@@ -149,7 +130,7 @@ class ReproducibleZipFile(ZipFile):
         ## repro-zipfile ADDED ##
         # Overwrite date_time and extrnal_attr (permissions mode)
         zinfo = copy(zinfo)
-        zinfo.date_time = date_time()[:6]
+        zinfo.date_time = date_time()
         if zinfo.is_dir():
             zinfo.external_attr = (0o40000 | dir_mode()) << 16
             zinfo.external_attr |= 0x10  # MS-DOS directory flag
@@ -159,17 +140,17 @@ class ReproducibleZipFile(ZipFile):
 
         if not self.fp:
             raise ValueError("Attempt to write to ZIP archive that was already closed")
-        if self._writing:  # type: ignore[attr-defined]
+        if self._writing:
             raise ValueError("Can't write to ZIP archive while an open writing handle exists.")
 
         if compress_type is not None:
             zinfo.compress_type = compress_type
 
         if compresslevel is not None:
-            zinfo._compresslevel = compresslevel  # type: ignore[attr-defined]
+            zinfo._compresslevel = compresslevel
 
         zinfo.file_size = len(data)  # Uncompressed size
-        with self._lock:  # type: ignore[attr-defined]
+        with self._lock:
             with self.open(zinfo, mode="w") as dest:
                 dest.write(data)
 
@@ -178,7 +159,7 @@ class ReproducibleZipFile(ZipFile):
         # https://github.com/python/cpython/blob/202efe1a3bcd499f3bf17bd953c6d36d47747e78/Lib/zipfile.py#L1837-L1870
         # Copyright Python Software Foundation, licensed under PSF License Version 2
         # See LICENSE file for full license agreement and notice of copyright
-        def mkdir(self, zinfo_or_directory_name: str | ZipInfo, mode: int = 0o777) -> None:
+        def mkdir(self, zinfo_or_directory_name, mode=511):
             """Creates a directory inside the zip archive."""
             if isinstance(zinfo_or_directory_name, ZipInfo):
                 zinfo = zinfo_or_directory_name
@@ -200,24 +181,23 @@ class ReproducibleZipFile(ZipFile):
             ## repro-zipfile ADDED ##
             # Overwrite date_time and extrnal_attr (permissions mode)
             zinfo = copy(zinfo)
-            zinfo.date_time = date_time()[:6]
+            zinfo.date_time = date_time()
             zinfo.external_attr = (0o40000 | dir_mode()) << 16
             zinfo.external_attr |= 0x10  # MS-DOS directory flag
             #########################
 
-            with self._lock:  # type: ignore[attr-defined]
-                if self._seekable:  # type: ignore[attr-defined]
-                    self.fp.seek(self.start_dir)  # type: ignore[union-attr]
-                # Start of header bytes
-                zinfo.header_offset = self.fp.tell()  # type: ignore[union-attr]
+            with self._lock:
+                if self._seekable:
+                    self.fp.seek(self.start_dir)
+                zinfo.header_offset = self.fp.tell()  # Start of header bytes
                 if zinfo.compress_type == ZIP_LZMA:
                     # Compressed data includes an end-of-stream (EOS) marker
                     zinfo.flag_bits |= _MASK_COMPRESS_OPTION_1
 
-                self._writecheck(zinfo)  # type: ignore[attr-defined]
+                self._writecheck(zinfo)
                 self._didModify = True
 
                 self.filelist.append(zinfo)
                 self.NameToInfo[zinfo.filename] = zinfo
-                self.fp.write(zinfo.FileHeader(False))  # type: ignore[union-attr]
-                self.start_dir = self.fp.tell()  # type: ignore[union-attr]
+                self.fp.write(zinfo.FileHeader(False))
+                self.start_dir = self.fp.tell()
