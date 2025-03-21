@@ -49,7 +49,7 @@ pre-install-commands = [
   "pip install -e . -e cli",
 ]
 features = ["cli", "tests"]
-dependencies = ["ipython", "mypy>=1.0.0", "ruff>=0.1.14"]
+dependencies = ["ipython", "mypy>=1.0.0", "ruff>=0.1.14", "vspect"]
 python = "3.10"
 path = ".venv"
 

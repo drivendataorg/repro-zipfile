@@ -1,9 +1,11 @@
-name: release-lib
+name: Release Library
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag'
+        required: true
 
 jobs:
   build:
@@ -11,26 +13,20 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
 
       - name: Install hatch
         run: |
-          pip install hatch
-          hatch env create
+          uv tool install hatch
 
       - name: Check that versions match
-        id: version
         run: |
-          echo "Release tag: [${{ github.ref_name }}]"
-          PACKAGE_VERSION=$(hatch version)
+          echo "Input version tag: [${{ github.event.inputs.version }}] "
+          PACKAGE_VERSION=$(hatch run vspect read .)
           echo "Package version: [$PACKAGE_VERSION]"
-          [ "${{ github.ref_name }}" == "v$PACKAGE_VERSION" ] || { exit 1; }
-          echo "major_minor_version=v${PACKAGE_VERSION%.*}" >> $GITHUB_OUTPUT
+          [[ ${{ github.event.inputs.version }} == "v$PACKAGE_VERSION" ]] || { exit 1; }
 
       - name: Build package
         run: |
@@ -50,3 +46,23 @@ jobs:
           user: ${{ secrets.PYPI_PROD_USERNAME }}
           password: ${{ secrets.PYPI_PROD_PASSWORD }}
           skip-existing: false
+
+      - id: extract-changelog
+        uses: sean0x42/markdown-extract@v2.1.0
+        with:
+          file: CHANGELOG.md
+          pattern: ${{ github.event.inputs.version }}
+
+      - name: Write output to file
+        run: |
+          cat <<'__EOF__' > __CHANGELOG-extracted.md
+          ${{ steps.extract-changelog.outputs.markdown }}
+          __EOF__
+
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.event.inputs.version }}
+          name: "repro-zipfile ${{ github.event.inputs.version }}"
+          commit: main
+          artifacts: "dist/*.whl,dist/*.tar.gz"
+          bodyFile: "__CHANGELOG-extracted.md"
