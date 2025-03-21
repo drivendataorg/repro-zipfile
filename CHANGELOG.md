@@ -1,6 +1,6 @@
 # Changelog — repro-zipfile
 
-## v0.4.0 (Unreleased)
+## v0.4.0 (2025-03-20)
 
 - Adds support for type checking per [PEP 561 specification](https://typing.python.org/en/latest/spec/distributing.html#packaging-typed-libraries). This is implemented through a `.pyi` stubs file. ([Issue #12](https://github.com/drivendataorg/repro-zipfile/issues/12), [PR #17](https://github.com/drivendataorg/repro-zipfile/pull/17))
 - Changed `date_time` function to always return the date-time value as 6-tuple of `int` values.
