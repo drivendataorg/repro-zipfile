@@ -57,7 +57,11 @@ path = ".venv"
 format = ["ruff check --fix {args:.}", "ruff format {args:.}"]
 lint = ["ruff format --check {args:.}", "ruff check {args:.}"]
 typecheck = [
-  "mypy . --install-types --non-interactive",
+  # Standard type checking excluding stub file
+  "mypy . --install-types --non-interactive --exclude '\\.pyi$'",
+  # Strict type checking on repro_zipfile with stub file
+  "mypy repro_zipfile --install-types --non-interactive --strict",
+  # Check stub
   "python -m mypy.stubtest repro_zipfile",
 ]
 
@@ -98,9 +102,3 @@ force-sort-within-sections = true
 
 [tool.coverage.run]
 omit = ["tests/*"]
-
-[tool.mypy]
-exclude = '\.pyi$'
-
-[[tool.mypy.overrides]]
-module = "repro_zipfile.*"
