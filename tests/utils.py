@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import re
 from tempfile import TemporaryDirectory
+from typing import Iterator
 from zipfile import ZipFile
 
 
@@ -47,19 +48,19 @@ def dir_tree_factory(parent_dir: Path):
 
 
 @contextmanager
-def umask(mask: int):
+def umask(mask: int) -> Iterator[int]:
     """Utility context manager to temporarily set umask to a new value."""
     old_mask = os.umask(mask)
     yield mask
     os.umask(old_mask)
 
 
-def hash_file(path: Path):
+def hash_file(path: Path) -> str:
     """Utility function to calculate the hash of a file's contents."""
     return hashlib.md5(path.read_bytes()).hexdigest()
 
 
-def assert_archive_contents_equals(arc1: Path, arc2: Path):
+def assert_archive_contents_equals(arc1: Path, arc2: Path) -> None:
     with TemporaryDirectory() as outdir1, TemporaryDirectory() as outdir2:
         with ZipFile(arc1, "r") as zp:
             zp.extractall(outdir1)

@@ -39,7 +39,7 @@ Issues = "https://github.com/drivendataorg/repro-zipfile/issues"
 Source = "https://github.com/drivendataorg/repro-zipfile"
 
 [tool.hatch.version]
-path = "repro_zipfile.py"
+path = "repro_zipfile/__init__.py"
 
 ## DEFAULT ENVIRONMENT ##
 
@@ -56,7 +56,14 @@ path = ".venv"
 [tool.hatch.envs.default.scripts]
 format = ["ruff check --fix {args:.}", "ruff format {args:.}"]
 lint = ["ruff format --check {args:.}", "ruff check {args:.}"]
-typecheck = ["mypy {args:repro_zipfile.py cli/rpzip.py} --install-types --non-interactive"]
+typecheck = [
+  # Standard type checking excluding stub file
+  "mypy . --install-types --non-interactive --exclude '\\.pyi$'",
+  # Strict type checking on repro_zipfile with stub file
+  "mypy repro_zipfile --install-types --non-interactive --strict",
+  # Check stub
+  "python -m mypy.stubtest repro_zipfile",
+]
 
 ## TESTS ENVIRONMENT ##
 
@@ -79,7 +86,7 @@ test = "python -Im pytest {args:tests} -v --cov=. --cov=./cli --cov-report=term 
 
 [tool.ruff]
 line-length = 99
-src = ["*.py", "cli/*.py", "tests/*.py"]
+src = ["repro_zipfile", "cli", "tests", "examples"]
 
 [tool.ruff.lint]
 select = [

@@ -3,7 +3,7 @@ import os
 import shutil
 import sys
 import time
-from typing import Tuple, Union
+from typing import Tuple
 from zipfile import ZIP_LZMA, ZipFile, ZipInfo
 
 try:
@@ -11,17 +11,19 @@ try:
 except ImportError:
     _MASK_COMPRESS_OPTION_1 = 0x02
 
-__version__ = "0.3.1"
+__all__ = ["date_time", "file_mode", "dir_mode", "ReproducibleZipFile"]
+
+__version__ = "0.4.0"
 
 
-def date_time() -> Union[time.struct_time, Tuple[int, int, int, int, int, int]]:
+def date_time() -> Tuple[int, int, int, int, int, int]:
     """Returns date_time value used to force overwrite on all ZipInfo objects. Defaults to
     1980-01-01 00:00:00. You can set this with the environment variable SOURCE_DATE_EPOCH as an
     integer value representing seconds since Epoch.
     """
     source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH", None)
     if source_date_epoch is not None:
-        return time.gmtime(int(source_date_epoch))
+        return time.gmtime(int(source_date_epoch))[:6]
     return (1980, 1, 1, 0, 0, 0)
 
 
