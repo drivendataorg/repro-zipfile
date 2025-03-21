@@ -13,7 +13,7 @@ except ImportError:
 
 __all__ = ["date_time", "file_mode", "dir_mode", "ReproducibleZipFile"]
 
-__version__ = "0.3.1"
+__version__ = "0.4.0"
 
 
 def date_time() -> Tuple[int, int, int, int, int, int]:

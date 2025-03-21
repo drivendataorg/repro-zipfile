@@ -1,5 +1,10 @@
 # Changelog — repro-zipfile
 
+## v0.4.0 (Unreleased)
+
+- Adds support for type checking per [PEP 561 specification](https://typing.python.org/en/latest/spec/distributing.html#packaging-typed-libraries). This is implemented through a `.pyi` stubs file.
+- Changed `date_time` function to always return the date-time value as 6-tuple of `int` values.
+
 ## v0.3.1 (2024-02-02)
 
 - Fixed bug that caused timestamps set by `SOURCE_DATE_EPOCH` to be affected by the local system timezone. It now always uses UTC. ([PR #8](https://github.com/drivendataorg/repro-zipfile/pull/8) from [@thatch](https://github.com/thatch))
