@@ -5,7 +5,7 @@ from zipfile import ZipFile, ZipInfo
 try:
     from time import tzset
 except ImportError:
-    tzset = None
+    tzset = None  # type: ignore[assignment]
 
 from repro_zipfile import ReproducibleZipFile
 from tests.utils import (
@@ -200,7 +200,7 @@ def test_write_single_file_source_date_epoch(base_path, monkeypatch):
         zp.write(data_file)
 
     monkeypatch.setenv("SOURCE_DATE_EPOCH", "1691732367")
-    if tzset:
+    if tzset is not None:
         monkeypatch.setenv("TZ", "America/Chicago")
         tzset()
 
@@ -211,7 +211,7 @@ def test_write_single_file_source_date_epoch(base_path, monkeypatch):
 
     sleep(2)
     data_file.touch()
-    if tzset:
+    if tzset is not None:
         # Set a different timezone to make sure it doesn't affect the set time
         monkeypatch.setenv("TZ", "America/Los_Angeles")
         tzset()
