@@ -1,4 +1,3 @@
-import time
 from zipfile import ZipFile, ZipInfo
 
 from _typeshed import Incomplete, SizedBuffer, StrPath
@@ -6,7 +5,7 @@ from _typeshed import Incomplete, SizedBuffer, StrPath
 __all__ = ["date_time", "file_mode", "dir_mode", "ReproducibleZipFile"]
 __version__: str
 
-def date_time() -> time.struct_time: ...
+def date_time() -> tuple[int, int, int, int, int, int]: ...
 def file_mode() -> int: ...
 def dir_mode() -> int: ...
 
