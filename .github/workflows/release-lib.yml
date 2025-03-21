@@ -21,6 +21,10 @@ jobs:
         run: |
           uv tool install hatch
 
+      - name: Install dependencies
+        run: |
+          hatch env create
+
       - name: Check that versions match
         run: |
           echo "Input version tag: [${{ github.event.inputs.version }}] "
