@@ -1,9 +1,11 @@
-name: release-cli
+name: Release CLI
 
 on:
-  push:
-    tags:
-      - "cli-v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version tag (e.g., 'v1.0.0')"
+        required: true
 
 jobs:
   build:
@@ -14,43 +16,62 @@ jobs:
         working-directory: ./cli
 
     steps:
-      - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
+    - uses: astral-sh/setup-uv@v5
 
-      - name: Install hatch
-        run: |
-          pip install hatch
+    - name: Install hatch
+      run: |
+        uv tool install hatch
 
-      - name: Check that versions match
-        id: version
-        run: |
-          echo "Release tag: [${{ github.ref_name }}]"
-          PACKAGE_VERSION=$(hatch version)
-          echo "Package version: [$PACKAGE_VERSION]"
-          [ "${{ github.ref_name }}" == "cli-v$PACKAGE_VERSION" ] || { exit 1; }
-          echo "major_minor_version=v${PACKAGE_VERSION%.*}" >> $GITHUB_OUTPUT
+    - name: Install dependencies
+      run: |
+        hatch env create
 
-      - name: Build package
-        run: |
-          hatch build
+    - name: Check that versions match
+      run: |
+        echo "Release tag: [${{ github.event.inputs.version }}] "
+        PACKAGE_VERSION=$(hatch run vspect package rpzip)
+        echo "Package version: [$PACKAGE_VERSION]"
+        [[ "${{ github.event.inputs.version }}" == "v$PACKAGE_VERSION" ]] || { exit 1; }
 
-      - name: Publish to Test PyPI
-        uses: pypa/gh-action-pypi-publish@v1.8.11
-        with:
-          user: ${{ secrets.PYPI_TEST_USERNAME }}
-          password: ${{ secrets.PYPI_TEST_PASSWORD }}
-          repository-url: https://test.pypi.org/legacy/
-          skip-existing: true
-          packages-dir: cli/dist/
+    - name: Build package
+      run: |
+        hatch build
 
-      - name: Publish to Production PyPI
-        uses: pypa/gh-action-pypi-publish@v1.8.11
-        with:
-          user: ${{ secrets.PYPI_PROD_USERNAME }}
-          password: ${{ secrets.PYPI_PROD_PASSWORD }}
-          skip-existing: false
-          packages-dir: cli/dist/
+    - name: Publish to Test PyPI
+      uses: pypa/gh-action-pypi-publish@v1.12.4
+      with:
+        user: ${{ secrets.PYPI_TEST_USERNAME }}
+        password: ${{ secrets.PYPI_TEST_PASSWORD }}
+        repository-url: https://test.pypi.org/legacy/
+        skip-existing: true
+        packages-dir: cli/dist/
+
+    - name: Publish to Production PyPI
+      uses: pypa/gh-action-pypi-publish@v1.12.4
+      with:
+        user: ${{ secrets.PYPI_PROD_USERNAME }}
+        password: ${{ secrets.PYPI_PROD_PASSWORD }}
+        skip-existing: false
+        packages-dir: cli/dist/
+
+    - id: extract-changelog
+      uses: sean0x42/markdown-extract@v2.1.0
+      with:
+        file: CHANGELOG.md
+        pattern: ${{ github.event.inputs.version }}
+
+    - name: Write output to file
+      run: |
+        cat <<'__EOF__' > __CHANGELOG-extracted.md
+        ${{ steps.extract-changelog.outputs.markdown }}
+        __EOF__
+
+    - uses: ncipollo/release-action@v1
+      with:
+        tag: cli-${{ github.event.inputs.version }}
+        name: "rpzip ${{ github.event.inputs.version }}"
+        commit: main
+        artifacts: "dist/*.whl,dist/*.tar.gz"
+        bodyFile: "__CHANGELOG-extracted.md"
