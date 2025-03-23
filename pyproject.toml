@@ -1,6 +1,6 @@
 [project]
 name = "repro-zipfile"
-dynamic = ["version"]
+version = "0.4.0"
 description = "A tiny, zero-dependency replacement for Python's zipfile.ZipFile for creating reproducible/deterministic ZIP archives."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -27,7 +27,6 @@ dependencies = []
 
 [project.optional-dependencies]
 cli = ["rpzip"]
-tests = ["pytest>=6,<8", "pytest-cases"]
 
 [project.urls]
 Documentation = "https://github.com/drivendataorg/repro-zipfile#readme"
@@ -38,45 +37,34 @@ Source = "https://github.com/drivendataorg/repro-zipfile"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.hatch.version]
-path = "repro_zipfile/__init__.py"
+## DEV ##
 
-## DEFAULT ENVIRONMENT ##
+[tool.uv.sources]
+rpzip = { workspace = true }
 
-[tool.hatch.envs.default]
-installer = "uv"
-pre-install-commands = ["uv pip install -e . -e cli"]
-features = ["cli", "tests"]
-dependencies = ["ipython", "mypy>=1.0.0", "ruff>=0.1.14", "vspect"]
-python = "3.10"
-path = ".venv"
+[tool.uv.workspace]
+members = ["cli/"]
 
-[tool.hatch.envs.default.scripts]
-format = ["ruff check --fix {args:.}", "ruff format {args:.}"]
-lint = ["ruff format --check {args:.}", "ruff check {args:.}"]
-typecheck = [
-  # Standard type checking excluding stub file
-  "mypy . --install-types --non-interactive --exclude '\\.pyi$'",
-  # Strict type checking on repro_zipfile with stub file
-  "mypy repro_zipfile --install-types --non-interactive --strict",
-  # Check stub
-  "python -m mypy.stubtest repro_zipfile",
+[dependency-groups]
+dev = [
+  "ipython",
+  "vspect",
+  { include-group = "lint" },
+  { include-group = "typecheck" },
+  { include-group = "test" },
 ]
-
-## TESTS ENVIRONMENT ##
-
-[tool.hatch.envs.tests]
-installer = "uv"
-pre-install-commands = ["uv pip install -e . -e cli"]
-features = ["tests", "cli"]
-dependencies = ["coverage>=6.5", "pytest-cov"]
-template = "tests"
-
-[[tool.hatch.envs.tests.matrix]]
-python = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
-
-[tool.hatch.envs.tests.scripts]
-test = "python -Im pytest {args:tests} -v --cov=. --cov=./cli --cov-report=term --cov-report=html --cov-report=xml"
+lint = [
+  "ruff>=0.1.14",
+]
+test = [
+  "coverage>=6.5",
+  "pytest>=6,<8",
+  "pytest-cases",
+  "pytest-cov",
+]
+typecheck = [
+  "mypy>=1.0.0",
+]
 
 ## TOOLS ##
 
@@ -96,5 +84,21 @@ unfixable = ["F"]
 known-first-party = ["repro_zipfile", "rpzip"]
 force-sort-within-sections = true
 
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--cov=repro_zipfile --cov=rpzip --cov-report=term --cov-report=html --cov-report=xml"
+testpaths = ["tests"]
+
 [tool.coverage.run]
+source = ["."]
 omit = ["tests/*"]
+
+[tool.coverage.paths]
+repro_zipfile = [
+  "repro_zipfile/",
+  "**/site-packages/repro_zipfile/",
+]
+rpzip = [
+  "cli/",
+  "**/site-packages/",
+]

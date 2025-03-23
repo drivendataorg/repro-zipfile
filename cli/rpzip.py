@@ -1,3 +1,4 @@
+from importlib.metadata import version
 import logging
 from pathlib import Path
 import sys
@@ -11,9 +12,8 @@ else:
 import typer
 
 from repro_zipfile import ReproducibleZipFile
-from repro_zipfile import __version__ as repro_zipfile_version
 
-__version__ = "0.1.1"
+__version__ = version("rpzip")
 
 app = typer.Typer()
 
@@ -24,7 +24,7 @@ logger.addHandler(logging.NullHandler())
 
 def version_callback(value: bool):
     if value:
-        print(f"repro-zipfile v{repro_zipfile_version}")
+        print(f"repro-zipfile v{version('repro-zipfile')}")
         print(f"rpzip v{__version__}")
         raise typer.Exit()
 
