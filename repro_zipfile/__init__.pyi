@@ -1,6 +1,6 @@
 from zipfile import ZipFile, ZipInfo
 
-from _typeshed import Incomplete, SizedBuffer, StrPath
+from _typeshed import SizedBuffer, StrPath
 
 __all__ = ["date_time", "file_mode", "dir_mode", "ReproducibleZipFile"]
 __version__: str
@@ -24,5 +24,4 @@ class ReproducibleZipFile(ZipFile):
         compress_type: int | None = None,
         compresslevel: int | None = None,
     ) -> None: ...
-    start_dir: Incomplete
     def mkdir(self, zinfo_or_directory_name: str | ZipInfo, mode: int = 511) -> None: ...
