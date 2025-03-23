@@ -16,20 +16,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: extractions/setup-just@v2
+
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
           cache-dependency-glob: |
             pyproject.toml
 
-      - name: Install hatch
-        run: |
-          uv tool install hatch
-
       - name: Lint package
         run: |
-          hatch run lint
-          hatch run typecheck
+          uv run --group lint just lint
+
+      - name: Typecheck package
+        run: |
+          uv run --group typecheck --all-extras just typecheck
 
   tests:
     name: "Tests (${{ matrix.os }}, Python ${{ matrix.python-version }})"
@@ -43,15 +44,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: extractions/setup-just@v2
+
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+          cache-suffix: "tests-${{ matrix.python-version }}"
           cache-dependency-glob: |
             pyproject.toml
-
-      - name: Install hatch
-        run: |
-          uv tool install hatch
 
       - name: Install zip on Windows
         if: matrix.os == 'windows-latest'
@@ -60,35 +60,15 @@ jobs:
 
       - name: Run tests
         run: |
-          hatch run tests.py${{ matrix.python-version }}:test
+          just python=${{ matrix.python-version }} test -vv
 
       - name: Upload coverage to codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
+          files: ./coverage.xml
           fail_ci_if_error: ${{ (github.event_name == 'push' && true) || (github.event_name == 'pull_request' && true) || false }}
         if: ${{ matrix.os == 'ubuntu-latest' }}
-
-      - name: Build distribution and test installation
-        shell: bash
-        run: |
-          hatch build
-          if [[ ${{ matrix.os }} == "windows-latest" ]]; then
-            PYTHON_BIN=Scripts/python
-          else
-            PYTHON_BIN=bin/python
-          fi
-          echo "=== Testing wheel installation ==="
-          python -m venv .venv-whl
-          .venv-whl/$PYTHON_BIN -m pip install --upgrade pip
-          .venv-whl/$PYTHON_BIN -m pip install dist/repro_zipfile-*.whl
-          .venv-whl/$PYTHON_BIN -c "from repro_zipfile import ReproducibleZipFile"
-          echo "=== Testing source installation ==="
-          python -m venv .venv-sdist
-          .venv-sdist/$PYTHON_BIN -m pip install --upgrade pip
-          .venv-sdist/$PYTHON_BIN -m pip install dist/repro_zipfile-*.tar.gz --force-reinstall
-          .venv-sdist/$PYTHON_BIN -c "from repro_zipfile import ReproducibleZipFile"
 
   notify:
     name: Notify failed build

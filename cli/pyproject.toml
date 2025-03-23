@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "rpzip"
-dynamic = ["version"]
+version = "0.1.2.dev"
 description = "A lightweight command-line program for creating reproducible/deterministic ZIP archives."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -22,6 +22,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: System :: Archiving",
   "Topic :: System :: Archiving :: Compression",
   "Topic :: System :: Archiving :: Packaging",
@@ -36,10 +37,7 @@ Documentation = "https://github.com/drivendataorg/repro-zipfile#readme"
 Issues = "https://github.com/drivendataorg/repro-zipfile/issues"
 Source = "https://github.com/drivendataorg/repro-zipfile/tree/main/cli"
 
-[tool.hatch.version]
-path = "rpzip.py"
-
-## TOOLS ##
-
-[tool.black]
-line-length = 99
+[dependency-groups]
+dev = [
+  "vspect",
+]

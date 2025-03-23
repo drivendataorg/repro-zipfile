@@ -16,25 +16,21 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: astral-sh/setup-uv@v5
-
-      - name: Install hatch
-        run: |
-          uv tool install hatch
-
-      - name: Install dependencies
-        run: |
-          hatch env create
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            pyproject.toml
 
       - name: Check that versions match
         run: |
           echo "Input version tag: [${{ github.event.inputs.version }}] "
-          PACKAGE_VERSION=$(hatch run vspect package repro-zipfile)
+          PACKAGE_VERSION=$(uv run python -m vspect package repro-zipfile)
           echo "Package version: [$PACKAGE_VERSION]"
           [[ "${{ github.event.inputs.version }}" == "v$PACKAGE_VERSION" ]] || { exit 1; }
 
       - name: Build package
         run: |
-          hatch build
+          uv build
 
       - name: Publish to Test PyPI
         uses: pypa/gh-action-pypi-publish@v1.12.4
