@@ -93,10 +93,10 @@ def rpzip(
     logger.debug("recurse_paths: %s", recurse_paths)
 
     # Set output archive path
-    if not out_file.endswith(".zip"):
-        out_path = Path(out_file).with_suffix(".zip").resolve()
-    else:
-        out_path = Path(out_file).resolve()
+    out_path = Path(out_file)
+    if "." not in out_path.name:
+        out_path = out_path.with_suffix(".zip")
+    out_path = out_path.resolve()
     logger.debug("writing to: %s", out_path)
 
     # Process inputs
