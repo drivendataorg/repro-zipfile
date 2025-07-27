@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "rpzip"
-version = "0.1.2.dev"
+version = "0.1.2"
 description = "A lightweight command-line program for creating reproducible/deterministic ZIP archives."
 readme = "README.md"
 requires-python = ">=3.8"
