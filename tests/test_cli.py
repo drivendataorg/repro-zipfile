@@ -94,7 +94,7 @@ def test_zip_no_suffix_adds_suffix(base_path):
     rpzip_args = [str(rpzip_out_arg), str(data_file)]
     rpzip_result = runner.invoke(app, rpzip_args)
     assert rpzip_result.exit_code == 0, rpzip_args
-    assert rpzip_out_expected.exists(), rpzip_args
+    assert rpzip_out_expected.exists(), (rpzip_args, list(base_path.iterdir()))
 
     # zip also adds .zip to argument another argument without suffix
     zip_out_expected = base_path / "zip.zip"
@@ -102,7 +102,7 @@ def test_zip_no_suffix_adds_suffix(base_path):
     zip_cmd = ["zip", str(zip_out_arg), str(data_file)]
     zip_result = subprocess.run(zip_cmd)
     assert zip_result.returncode == 0, zip_cmd
-    assert zip_out_expected.exists(), zip_cmd
+    assert zip_out_expected.exists(), (zip_cmd, list(base_path.iterdir()))
 
     assert_archive_contents_equals(rpzip_out_expected, zip_out_expected)
 
@@ -115,14 +115,14 @@ def test_zip_existing_suffix_does_not_add_suffix(base_path):
     rpzip_args = [str(rpzip_out_expected), str(data_file)]
     rpzip_result = runner.invoke(app, rpzip_args)
     assert rpzip_result.exit_code == 0, rpzip_args
-    assert rpzip_out_expected.exists(), rpzip_args
+    assert rpzip_out_expected.exists(), (rpzip_args, list(base_path.iterdir()))
 
     # zip also does not add .zip to argument with existing suffix
     zip_out_expected = base_path / "zip.some_suffix"
     zip_cmd = ["zip", str(zip_out_expected), str(data_file)]
     zip_result = subprocess.run(zip_cmd)
     assert zip_result.returncode == 0, zip_cmd
-    assert zip_out_expected.exists(), zip_cmd
+    assert zip_out_expected.exists(), (zip_cmd, list(base_path.iterdir()))
 
     assert_archive_contents_equals(rpzip_out_expected, zip_out_expected)
 
