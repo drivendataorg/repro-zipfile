@@ -106,6 +106,7 @@ def test_zip_no_suffix_adds_suffix(base_path):
 
     assert_archive_contents_equals(rpzip_out_expected, zip_out_expected)
 
+
 def test_zip_existing_suffix_does_not_add_suffix(base_path):
     """Does not add .zip suffix if file already has one."""
     data_file = file_factory(base_path)
@@ -125,6 +126,7 @@ def test_zip_existing_suffix_does_not_add_suffix(base_path):
     assert zip_out_expected.exists(), (zip_cmd, list(base_path.iterdir()))
 
     assert_archive_contents_equals(rpzip_out_expected, zip_out_expected)
+
 
 def test_verbosity(rel_path):
     """Adjustment of verbosity with -v and -q."""
