@@ -29,6 +29,7 @@ typecheck:
 # Run tests
 test *args:
     uv run --python {{python}} --no-editable --all-extras --no-dev --group test --isolated \
+        --reinstall-package rpzip --reinstall-package repro-zipfile \
         python -I -m pytest {{args}}
 
 # Run all tests with Python version matrix
