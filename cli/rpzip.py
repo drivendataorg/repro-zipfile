@@ -94,7 +94,7 @@ def rpzip(
 
     # Set output archive path
     out_path = Path(out_file)
-    if "." not in out_path.name:
+    if not out_path.suffix:
         out_path = out_path.with_suffix(".zip")
     out_path = out_path.resolve()
     logger.debug("writing to: %s", out_path)
