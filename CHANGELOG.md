@@ -1,7 +1,9 @@
 # Changelog — repro-zipfile
 
-## v0.4.1 (Unreleased)
-- Removed the incomplete type annotation for `start_dir` attribute on `ReproducibleZipFile`.
+## v0.4.1 (2025-10-05)
+
+- Added Python 3.14 as a supported version.
+- Removed the `Incomplete` type annotation for `start_dir` attribute on `ReproducibleZipFile` ([`e00f981`](e00f98127c6895c59e1398eaee95523481491940)).
 
 ## v0.4.0 (2025-03-20)
 
