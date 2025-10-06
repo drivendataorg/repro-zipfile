@@ -11,9 +11,6 @@ jobs:
   build:
     name: Publish CLI release
     runs-on: "ubuntu-latest"
-    defaults:
-      run:
-        working-directory: ./cli
 
     steps:
     - uses: actions/checkout@v4
@@ -22,9 +19,10 @@ jobs:
       with:
         enable-cache: true
         cache-dependency-glob: |
-          pyproject.toml
+          cli/pyproject.toml
 
     - name: Check that versions match
+      working-directory: ./cli
       run: |
         echo "Release tag: [${{ github.event.inputs.version }}] "
         PACKAGE_VERSION=$(uv run python -m vspect package rpzip)
@@ -32,6 +30,7 @@ jobs:
         [[ "${{ github.event.inputs.version }}" == "v$PACKAGE_VERSION" ]] || { exit 1; }
 
     - name: Build package
+      working-directory: ./cli
       run: |
         uv build
 
@@ -59,6 +58,7 @@ jobs:
         pattern: ${{ github.event.inputs.version }}
 
     - name: Write output to file
+      working-directory: ./cli
       run: |
         cat <<'__EOF__' > __CHANGELOG-extracted.md
         ${{ steps.extract-changelog.outputs.markdown }}
@@ -69,5 +69,5 @@ jobs:
         tag: cli-${{ github.event.inputs.version }}
         name: "rpzip ${{ github.event.inputs.version }}"
         commit: main
-        artifacts: "dist/*.whl,dist/*.tar.gz"
-        bodyFile: "__CHANGELOG-extracted.md"
+        artifacts: "cli/dist/*.whl,cli/dist/*.tar.gz"
+        bodyFile: "cli/__CHANGELOG-extracted.md"
