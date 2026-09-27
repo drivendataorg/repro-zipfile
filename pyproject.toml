@@ -40,7 +40,11 @@ build-backend = "hatchling.build"
 
 ## DEV ##
 
+[tool.uv]
+exclude-newer = "7 days"
+
 [tool.uv.sources]
+repro-zipfile = { workspace = true }
 rpzip = { workspace = true }
 
 [tool.uv.workspace]
