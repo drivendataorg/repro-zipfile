@@ -22,8 +22,8 @@ def date_time() -> Tuple[int, int, int, int, int, int]:
     1980-01-01 00:00:00. You can set this with the environment variable SOURCE_DATE_EPOCH as an
     integer value representing seconds since Epoch.
     """
-    source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH", None)
-    if source_date_epoch is not None:
+    source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH", "").strip()
+    if source_date_epoch:
         return time.gmtime(int(source_date_epoch))[:6]
     return (1980, 1, 1, 0, 0, 0)
 
@@ -34,8 +34,8 @@ def file_mode() -> int:
     REPRO_ZIPFILE_FILE_MODE. It should be in the Unix standard three-digit octal representation
     (e.g., '644').
     """
-    file_mode_env = os.environ.get("REPRO_ZIPFILE_FILE_MODE", None)
-    if file_mode_env is not None:
+    file_mode_env = os.environ.get("REPRO_ZIPFILE_FILE_MODE", "").strip()
+    if file_mode_env:
         return int(file_mode_env, 8)
     return 0o644
 
@@ -46,8 +46,8 @@ def dir_mode() -> int:
     REPRO_ZIPFILE_DIR_MODE. It should be in the Unix standard three-digit octal representation
     (e.g., '755').
     """
-    dir_mode_env = os.environ.get("REPRO_ZIPFILE_DIR_MODE", None)
-    if dir_mode_env is not None:
+    dir_mode_env = os.environ.get("REPRO_ZIPFILE_DIR_MODE", "").strip()
+    if dir_mode_env:
         return int(dir_mode_env, 8)
     return 0o755
 

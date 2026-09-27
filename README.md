@@ -113,13 +113,13 @@ See the next two sections for more details about the replacement metadata values
 
 ZIP archives store the last-modified timestamps of files and directories. `ReproducibleZipFile` will set this to a fixed value. By default, the fixed value is 1980-01-01 00:00 UTC, which is the earliest timestamp that is supported by the ZIP format specifications.
 
-You can customize this value with the `SOURCE_DATE_EPOCH` environment variable. If set, it will be used as the fixed value instead. This should be an integer corresponding to the [Unix epoch time](https://en.wikipedia.org/wiki/Unix_time) of the timestamp you want to set, e.g., `1704067230` for 2024-01-01 00:00:00 UTC. `SOURCE_DATE_EPOCH` is a [standard](https://reproducible-builds.org/docs/source-date-epoch/) created by the [Reproducible Builds project](https://reproducible-builds.org/) for software distributions.
+You can customize this value with the `SOURCE_DATE_EPOCH` environment variable. If set to a non-empty value, it will be used as the fixed value instead. This should be an integer corresponding to the [Unix epoch time](https://en.wikipedia.org/wiki/Unix_time) of the timestamp you want to set, e.g., `1704067230` for 2024-01-01 00:00:00 UTC. `SOURCE_DATE_EPOCH` is a [standard](https://reproducible-builds.org/docs/source-date-epoch/) created by the [Reproducible Builds project](https://reproducible-builds.org/) for software distributions.
 
 ### File-system permissions
 
 ZIP archives store the file-system permissions of files and directories. The default permissions set for new files or directories often can be different across different systems or users without any intentional choices being made. (These default permissions are controlled by something called [`umask`](https://en.wikipedia.org/wiki/Umask).) `ReproducibleZipFile` will set these to fixed values. By default, the fixed values are `0o644` (`rw-r--r--`) for files and `0o755` (`rwxr-xr-x`) for directories, which matches the common default `umask` of `0o022` for root users on Unix systems. (The [`0o` prefix](https://docs.python.org/3/reference/lexical_analysis.html#integers) is how you can write an octal—i.e., base 8—integer literal in Python.)
 
-You can customize these values using the environment variables `REPRO_ZIPFILE_FILE_MODE` and `REPRO_ZIPFILE_DIR_MODE`. They should be in three-digit octal [Unix numeric notation](https://en.wikipedia.org/wiki/File-system_permissions#Numeric_notation), e.g., `644` for `rw-r--r--`.
+You can customize these values using the environment variables `REPRO_ZIPFILE_FILE_MODE` and `REPRO_ZIPFILE_DIR_MODE`. They should be in three-digit octal [Unix numeric notation](https://en.wikipedia.org/wiki/File-system_permissions#Numeric_notation), e.g., `644` for `rw-r--r--`. Empty values are ignored.
 
 ## Why care about reproducible ZIP archives?
 

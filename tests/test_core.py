@@ -2,12 +2,14 @@ import platform
 from time import sleep
 from zipfile import ZipFile, ZipInfo
 
+import pytest
+
 try:
     from time import tzset
 except ImportError:
     tzset = None  # type: ignore[assignment]
 
-from repro_zipfile import ReproducibleZipFile
+from repro_zipfile import ReproducibleZipFile, date_time, dir_mode, file_mode
 from tests.utils import (
     assert_archive_contents_equals,
     data_factory,
@@ -337,6 +339,18 @@ def test_write_single_dir_dir_mode_env_var(rel_path, monkeypatch):
         mode = (zp.getinfo(dir_path.name + "/").external_attr >> 16) & 0o777
 
     assert mode == 0o700, (oct(mode), oct(0o700))
+
+
+@pytest.mark.parametrize("value", ["", " ", "\t\n"])
+def test_env_vars_empty(value, monkeypatch):
+    """Empty or whitespace-only environment variables use the default values."""
+    monkeypatch.setenv("SOURCE_DATE_EPOCH", value)
+    monkeypatch.setenv("REPRO_ZIPFILE_FILE_MODE", value)
+    monkeypatch.setenv("REPRO_ZIPFILE_DIR_MODE", value)
+
+    assert date_time() == (1980, 1, 1, 0, 0, 0)
+    assert file_mode() == 0o644
+    assert dir_mode() == 0o755
 
 
 def test_writestr(tmp_path):

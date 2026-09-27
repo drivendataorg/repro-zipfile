@@ -1,5 +1,9 @@
 # Changelog — repro-zipfile
 
+## Unreleased
+
+- Fixed `SOURCE_DATE_EPOCH`, `REPRO_ZIPFILE_FILE_MODE`, and `REPRO_ZIPFILE_DIR_MODE` environment variables raising an error when set to an empty or whitespace-only value. They now fall back to the default values. ([Issue #24](https://github.com/drivendataorg/repro-zipfile/issues/24))
+
 ## v0.4.1 (2025-10-05)
 
 - Added Python 3.14 as a supported version.
