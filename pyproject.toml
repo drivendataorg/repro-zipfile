@@ -44,8 +44,8 @@ build-backend = "hatchling.build"
 exclude-newer = "7 days"
 
 [tool.uv.sources]
-rpzip = { workspace = true }
 repro-zipfile = { workspace = true }
+rpzip = { workspace = true }
 
 [tool.uv.workspace]
 members = ["cli/"]
