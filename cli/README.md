@@ -3,7 +3,6 @@
 [![PyPI](https://img.shields.io/pypi/v/rpzip.svg)](https://pypi.org/project/rpzip/)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/rpzip)](https://pypi.org/project/rpzip/)
 [![tests](https://github.com/drivendataorg/repro-zipfile/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/drivendataorg/repro-zipfile/actions/workflows/tests.yml?query=branch%3Amain)
-[![codecov](https://codecov.io/gh/drivendataorg/repro-zipfile/branch/main/graph/badge.svg)](https://codecov.io/gh/drivendataorg/repro-zipfile)
 
 **A lightweight command-line program for creating reproducible/deterministic ZIP archives.**
 
