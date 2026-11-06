@@ -1,5 +1,9 @@
 # Changelog — rpzip
 
+## v0.2.0 (Unreleased)
+
+- Changed the source distribution to no longer include the changelog. This is a result of changing the build backend from hatchling to uv_build.
+
 ## v0.1.3 (2025-10-05)
 
 - Added Python 3.14 as a supported version.
