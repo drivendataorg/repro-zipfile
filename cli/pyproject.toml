@@ -36,8 +36,3 @@ rpzip = "rpzip:app"
 Documentation = "https://github.com/drivendataorg/repro-zipfile#readme"
 Issues = "https://github.com/drivendataorg/repro-zipfile/issues"
 Source = "https://github.com/drivendataorg/repro-zipfile/tree/main/cli"
-
-[dependency-groups]
-dev = [
-  "vspect",
-]

@@ -52,7 +52,7 @@ members = ["cli/"]
 [dependency-groups]
 dev = [
   "ipython",
-  "vspect",
+  { include-group = "vspect" },
   { include-group = "lint" },
   { include-group = "typecheck" },
   { include-group = "test" },
@@ -68,6 +68,9 @@ test = [
 ]
 typecheck = [
   "mypy>=1.0.0",
+]
+vspect = [
+  "vspect",
 ]
 
 ## TOOLS ##
