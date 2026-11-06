@@ -30,7 +30,7 @@ zizmor *args:
 typecheck python=python:
     # Standard type checking excluding stub file
     uv run --python={{python}} --isolated --all-extras --no-dev --group typecheck --group tests -- \
-        mypy . --install-types --non-interactive --exclude '\\.pyi$'
+        mypy . --install-types --non-interactive --exclude '\.pyi$'
     # Strict type checking on repro_zipfile with stub file
     uv run --python={{python}} --isolated --all-extras --no-dev --group typecheck -- \
         mypy src/repro_zipfile --install-types --non-interactive --strict
