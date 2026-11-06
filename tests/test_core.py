@@ -1,13 +1,14 @@
 import platform
+import sys
 from time import sleep
 from zipfile import ZipFile, ZipInfo
 
 import pytest
 
-try:
+if sys.platform != "win32":
     from time import tzset
-except ImportError:
-    tzset = None  # type: ignore[assignment]
+else:
+    tzset = None
 
 from repro_zipfile import ReproducibleZipFile, date_time, dir_mode, file_mode
 from tests.utils import (
