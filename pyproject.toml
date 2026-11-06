@@ -76,7 +76,7 @@ typecheck = [
 
 [tool.ruff]
 line-length = 99
-src = ["repro_zipfile", "cli", "tests", "examples"]
+src = ["src", "cli/src", "tests", "examples"]
 
 [tool.ruff.lint]
 select = [
@@ -87,7 +87,6 @@ select = [
 unfixable = ["F"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["repro_zipfile", "rpzip"]
 force-sort-within-sections = true
 
 [tool.pytest.ini_options]
@@ -101,10 +100,12 @@ omit = ["tests/*"]
 
 [tool.coverage.paths]
 repro_zipfile = [
-  "repro_zipfile/",
-  "**/site-packages/repro_zipfile/",
+  "src/repro_zipfile/",
+  "*/src/repro_zipfile/",
+  "*/site-packages/repro_zipfile/",
 ]
 rpzip = [
-  "cli/",
-  "**/site-packages/",
+  "cli/src/rpzip/",
+  "*/cli/src/rpzip/",
+  "*/site-packages/rpzip/",
 ]

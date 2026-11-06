@@ -23,7 +23,7 @@ typecheck:
     # Standard type checking excluding stub file
     mypy . --install-types --non-interactive --exclude '\\.pyi$'
     # Strict type checking on repro_zipfile with stub file
-    mypy repro_zipfile --install-types --non-interactive --strict
+    mypy src/repro_zipfile --install-types --non-interactive --strict
     # Check stub
     python -m mypy.stubtest repro_zipfile
 # Run tests
