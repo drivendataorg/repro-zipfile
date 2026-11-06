@@ -98,10 +98,93 @@ jobs:
       - name: Run tests
         run: just test --python=${{ matrix.python-version }} -- -vv
 
+      - name: Rename coverage data file
+        run: mv .coverage ".coverage.${{ matrix.os }}-py${{ matrix.python-version }}"
+
+      - name: Upload coverage data
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: coverage-data-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: .coverage.*
+          include-hidden-files: true
+          if-no-files-found: error
+
+  coverage:
+    name: Coverage
+    needs: tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      total: ${{ steps.report.outputs.total }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+
+      - name: Download coverage data
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: coverage-data-*
+          merge-multiple: true
+
+      - name: Combine coverage data
+        run: uv run --only-group tests -- coverage combine
+
+      - name: Report coverage
+        id: report
+        run: |
+          uv run --only-group tests -- coverage report
+          uv run --only-group tests -- coverage report --format=markdown >> "$GITHUB_STEP_SUMMARY"
+          uv run --only-group tests -- coverage html
+          total=$(uv run --only-group tests -- coverage report --format=total)
+          echo "total=$total" >> "$GITHUB_OUTPUT"
+
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: coverage-html
+          path: htmlcov/
+
+  coverage-badge:
+    name: Publish coverage badge
+    needs: coverage
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Push to the badges branch
+    steps:
+      - name: Push badge data to badges branch
+        env:
+          COVERAGE_TOTAL: ${{ needs.coverage.outputs.total }}
+          TOKEN: ${{ github.token }}
+        run: |
+          [[ $COVERAGE_TOTAL =~ ^[0-9]+$ ]] || { echo "Unexpected coverage total: '$COVERAGE_TOTAL'"; exit 1; }
+          main_sha=$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | cut -f1)
+          if [[ "$main_sha" != "$GITHUB_SHA" ]]; then
+            echo "main has moved past ${GITHUB_SHA}; skipping badge update"
+            exit 0
+          fi
+          if (( COVERAGE_TOTAL >= 90 )); then color=brightgreen
+          elif (( COVERAGE_TOTAL >= 75 )); then color=yellow
+          else color=red
+          fi
+          git init --quiet --initial-branch=badges badges
+          cd badges
+          jq -n --arg message "${COVERAGE_TOTAL}%" --arg color "$color" \
+            '{schemaVersion: 1, label: "coverage", message: $message, color: $color}' > coverage.json
+          git add coverage.json
+          git -c user.name="github-actions[bot]" \
+            -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit --quiet --message "Update coverage badge for ${GITHUB_SHA}"
+          git push --force --quiet "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" badges
+
   all-green:
     name: All green
     if: always()
-    needs: [code-quality, zizmor, tests]
+    needs: [code-quality, zizmor, tests, coverage]
     runs-on: ubuntu-latest
     steps:
       - uses: re-actors/alls-green@b5b5b37504aa4183270bd3d855c52a67f212be35 # v1.3.0
@@ -110,7 +193,7 @@ jobs:
 
   notify:
     name: Notify failed build
-    needs: [code-quality, zizmor, tests]
+    needs: [code-quality, zizmor, tests, coverage, coverage-badge]
     if: failure() && (github.event_name == 'push' || github.event_name == 'schedule')
     runs-on: ubuntu-latest
     permissions:
