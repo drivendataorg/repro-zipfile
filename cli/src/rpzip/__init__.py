@@ -110,7 +110,3 @@ def rpzip(
         for path in sorted(in_paths):
             logger.info("adding: %s", path)
             zp.write(path)
-
-
-if __name__ == "__main__":
-    app(prog_name="python -m rpzip")

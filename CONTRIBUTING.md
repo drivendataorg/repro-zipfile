@@ -14,7 +14,7 @@ This project uses [uv](https://github.com/astral-sh/uv) as its project managemen
 
 ### Directory structure
 
-This is a monorepo containing both the repro-zipfile library package and the rpzip CLI package. The root of the repository contains files relevant to the library package, and the CLI package is in the subdirectory `cli/`.
+This is a monorepo containing both the repro-zipfile library package and the rpzip CLI package. The library package is in `src/repro_zipfile/`, and the CLI package is in the subdirectory `cli/`, with its source in `cli/src/rpzip/`.
 
 Tests for both packages are combined in `tests/`.
 
