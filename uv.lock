@@ -478,6 +478,9 @@ test = [
 typecheck = [
     { name = "mypy" },
 ]
+vspect = [
+    { name = "vspect" },
+]
 
 [package.metadata]
 requires-dist = [{ name = "rpzip", marker = "extra == 'cli'", editable = "cli" }]
@@ -502,6 +505,7 @@ test = [
     { name = "pytest-cov" },
 ]
 typecheck = [{ name = "mypy", specifier = ">=1.0.0" }]
+vspect = [{ name = "vspect" }]
 
 [[package]]
 name = "rich"
@@ -526,19 +530,11 @@ dependencies = [
     { name = "typer" },
 ]
 
-[package.dev-dependencies]
-dev = [
-    { name = "vspect" },
-]
-
 [package.metadata]
 requires-dist = [
     { name = "repro-zipfile", editable = "." },
     { name = "typer", specifier = ">=0.9.0" },
 ]
-
-[package.metadata.requires-dev]
-dev = [{ name = "vspect" }]
 
 [[package]]
 name = "ruff"
