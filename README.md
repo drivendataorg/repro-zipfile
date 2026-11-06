@@ -5,6 +5,7 @@
 [![conda-forge feedstock](https://img.shields.io/badge/conda--forge-feedstock-yellowgreen)](https://github.com/conda-forge/repro-zipfile-feedstock)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/repro-zipfile)](https://pypi.org/project/repro-zipfile/)
 [![tests](https://github.com/drivendataorg/repro-zipfile/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/drivendataorg/repro-zipfile/actions/workflows/tests.yml?query=branch%3Amain)
+[![coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/drivendataorg/repro-zipfile/badges/coverage.json)](https://github.com/drivendataorg/repro-zipfile/actions/workflows/tests.yml?query=branch%3Amain)
 
 **A tiny, zero-dependency replacement for Python's `zipfile.ZipFile` library for creating reproducible/deterministic ZIP archives.**
 
