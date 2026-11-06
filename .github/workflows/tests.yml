@@ -1,4 +1,4 @@
-name: tests
+name: Tests
 
 on:
   push:
@@ -8,6 +8,11 @@ on:
     # Run every Sunday
     - cron: "0 0 * * 0"
   workflow_dispatch:
+    inputs:
+      upgrade:
+        description: Upgrade locked dependencies before running tests
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
@@ -17,7 +22,7 @@ permissions: {}
 
 jobs:
   code-quality:
-    name: Code Quality
+    name: Code quality
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -31,18 +36,12 @@ jobs:
           just-version: "1.55.0" # Keep in sync with minimum-version in justfile
 
       - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
-        with:
-          enable-cache: true
-          cache-dependency-glob: |
-            pyproject.toml
+
+      - name: Check lockfile is up to date
+        run: uv lock --check
 
       - name: Lint package
-        run: |
-          uv run --group lint just lint
-
-      - name: Typecheck package
-        run: |
-          uv run --group typecheck --all-extras just typecheck
+        run: just lint
 
   zizmor:
     name: Zizmor audit
@@ -59,12 +58,13 @@ jobs:
           advanced-security: false
 
   tests:
-    name: "Tests (${{ matrix.os }}, Python ${{ matrix.python-version }})"
+    name: Tests (${{ matrix.os }}, Python ${{ matrix.python-version }})
     needs: code-quality
     runs-on: ${{ matrix.os }}
     permissions:
       contents: read
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
@@ -80,19 +80,33 @@ jobs:
 
       - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
-          enable-cache: true
-          cache-suffix: "tests-${{ matrix.python-version }}"
-          cache-dependency-glob: |
-            pyproject.toml
+          python-version: ${{ matrix.python-version }}
+          cache-suffix: "tests-${{ matrix.os }}-${{ matrix.python-version }}"
 
       - name: Install zip on Windows
         if: matrix.os == 'windows-latest'
         run: |
           choco install zip
 
+      - name: Upgrade locked dependencies
+        if: github.event_name == 'schedule' || inputs.upgrade
+        run: uv lock --upgrade
+
+      - name: Run static typechecking
+        run: just typecheck --python=${{ matrix.python-version }}
+
       - name: Run tests
-        run: |
-          just python=${{ matrix.python-version }} test -vv
+        run: just test --python=${{ matrix.python-version }} -- -vv
+
+  all-green:
+    name: All green
+    if: always()
+    needs: [code-quality, zizmor, tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: re-actors/alls-green@b5b5b37504aa4183270bd3d855c52a67f212be35 # v1.3.0
+        with:
+          jobs: ${{ toJSON(needs) }}
 
   notify:
     name: Notify failed build

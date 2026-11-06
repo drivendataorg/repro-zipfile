@@ -39,7 +39,7 @@ just test
 To specify a version of Python, use for example:
 
 ```bash
-just python=3.11 test
+just test --python=3.11
 ```
 
 To run tests on the full test matrix, use:

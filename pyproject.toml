@@ -55,12 +55,12 @@ dev = [
   { include-group = "vspect" },
   { include-group = "lint" },
   { include-group = "typecheck" },
-  { include-group = "test" },
+  { include-group = "tests" },
 ]
 lint = [
   "ruff>=0.1.14",
 ]
-test = [
+tests = [
   "coverage>=6.5",
   "pytest>=6,<8",
   "pytest-cases",
