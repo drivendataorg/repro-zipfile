@@ -68,6 +68,8 @@ tests = [
 ]
 typecheck = [
   "mypy>=1.0.0",
+  "pyrefly",
+  "ty",
 ]
 vspect = [
   "vspect",
@@ -89,6 +91,15 @@ unfixable = ["F"]
 
 [tool.ruff.lint.isort]
 force-sort-within-sections = true
+
+[tool.mypy]
+check_untyped_defs = true
+
+[tool.pyrefly]
+project-includes = ["src/repro_zipfile/__init__.pyi", "tests/typechecks.py"]
+
+[tool.ty.src]
+include = ["src/repro_zipfile/__init__.pyi", "tests/typechecks.py"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"

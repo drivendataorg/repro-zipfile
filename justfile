@@ -25,18 +25,37 @@ format *args:
 zizmor *args:
     uvx --exclude-newer "7 days" zizmor .github/ {{args}}
 
-# Run static typechecking
+# Run static typechecking with all typecheckers
 [arg("python", long)]
 typecheck python=python:
-    # Standard type checking excluding stub file
+    just typecheck-mypy --python={{python}}
+    just typecheck-pyrefly --python={{python}}
+    just typecheck-ty --python={{python}}
+
+# Run static typechecking with mypy
+[arg("python", long)]
+typecheck-mypy python=python:
+    # Standard type checking excluding stub file and stub usage checks
     uv run --python={{python}} --isolated --all-extras --no-dev --group typecheck --group tests -- \
-        mypy . --install-types --non-interactive --exclude '\.pyi$'
-    # Strict type checking on repro_zipfile with stub file
-    uv run --python={{python}} --isolated --all-extras --no-dev --group typecheck -- \
-        mypy src/repro_zipfile --install-types --non-interactive --strict
+        mypy . --exclude '(\.pyi|typechecks\.py)$'
+    # Strict type checking on stub file and stub usage checks
+    uv run --python={{python}} --isolated --all-extras --no-dev --group typecheck --group tests -- \
+        mypy src/repro_zipfile tests/typechecks.py --strict
     # Check stub
     uv run --python={{python}} --isolated --all-extras --no-dev --group typecheck -- \
         python -m mypy.stubtest repro_zipfile
+
+# Run static typechecking of the stub with pyrefly (passes through args)
+[arg("python", long)]
+typecheck-pyrefly python=python *args:
+    uv run --python={{python}} --isolated --all-extras --no-dev --group typecheck -- \
+        pyrefly check --python-version={{python}} {{args}}
+
+# Run static typechecking of the stub with ty (passes through args)
+[arg("python", long)]
+typecheck-ty python=python *args:
+    uv run --python={{python}} --isolated --all-extras --no-dev --group typecheck -- \
+        ty check --python-version={{python}} {{args}}
 
 # Run tests (passes through args)
 [arg("python", long)]
