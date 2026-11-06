@@ -2,6 +2,7 @@
 
 ## v0.5.0 (Unreleased)
 
+- Removed support for Python 3.8 and 3.9.
 - Added Python 3.15 as a supported version.
 - Fixed `SOURCE_DATE_EPOCH`, `REPRO_ZIPFILE_FILE_MODE`, and `REPRO_ZIPFILE_DIR_MODE` environment variables raising an error when set to an empty or whitespace-only value. They now fall back to the default values. ([Issue #24](https://github.com/drivendataorg/repro-zipfile/issues/24))
 - Changed the source distribution to contain only the package source, `pyproject.toml`, README, and LICENSE. It previously also included the CLI package, tests, and other repository files. This is a result of changing the build backend from hatchling to uv_build.

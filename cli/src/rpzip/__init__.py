@@ -2,12 +2,7 @@ from importlib.metadata import version
 import logging
 from pathlib import Path
 import sys
-from typing import List, Optional
-
-if sys.version_info >= (3, 9):
-    from typing import Annotated
-else:
-    from typing_extensions import Annotated
+from typing import Annotated, List, Optional
 
 import typer
 
