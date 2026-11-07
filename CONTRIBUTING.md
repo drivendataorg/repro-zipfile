@@ -64,6 +64,8 @@ To run static typechecking:
 just typecheck
 ```
 
+This runs mypy on all of the code and stubtest on the type stub file, `src/repro_zipfile/__init__.pyi`. It also runs mypy, pyrefly, and ty on the type stub file and on `tests/typechecks.py`, which uses the public API the way a user would, so that the types work for users of any of the three typecheckers. To run one typechecker, use `just typecheck-mypy`, `just typecheck-pyrefly`, or `just typecheck-ty`.
+
 ### Releases and publishing to PyPI
 
 The release process of building and publishing the packages is done using GitHub Actions CI. There are two workflows:
