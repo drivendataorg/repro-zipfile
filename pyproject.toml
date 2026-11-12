@@ -61,7 +61,7 @@ lint = [
   "ruff>=0.1.14",
 ]
 tests = [
-  "coverage>=6.5",
+  "coverage>=7.10",
   "pytest>=6,<8",
   "pytest-cases",
   "pytest-cov",
@@ -109,6 +109,7 @@ testpaths = ["tests"]
 [tool.coverage.run]
 source = ["."]
 omit = ["tests/*"]
+patch = ["subprocess"]
 
 [tool.coverage.paths]
 repro_zipfile = [

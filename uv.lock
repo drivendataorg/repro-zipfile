@@ -979,7 +979,7 @@ provides-extras = ["cli"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "coverage", specifier = ">=6.5" },
+    { name = "coverage", specifier = ">=7.10" },
     { name = "ipython" },
     { name = "mypy", specifier = ">=1.0.0" },
     { name = "pyrefly" },
@@ -992,7 +992,7 @@ dev = [
 ]
 lint = [{ name = "ruff", specifier = ">=0.1.14" }]
 tests = [
-    { name = "coverage", specifier = ">=6.5" },
+    { name = "coverage", specifier = ">=7.10" },
     { name = "pytest", specifier = ">=6,<8" },
     { name = "pytest-cases" },
     { name = "pytest-cov" },
